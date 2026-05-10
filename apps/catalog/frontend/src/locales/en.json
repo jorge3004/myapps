@@ -1,0 +1,143 @@
+{
+  "search": {
+    "placeholder": "Search users or catalogs...",
+    "users": "Search users",
+    "catalogs": "Search catalogs"
+  },
+  "forgot": {
+    "form": {
+      "title": "Recover password",
+      "username": "Username",
+      "submit": "Request reset",
+      "userNotFound": "User does not exist"
+    },
+    "status": {
+      "title": "Recovery status",
+      "pending": "Your request is pending administrator approval.",
+      "approved": "Your request has been approved. You can change your password.",
+      "rejected": "Your request was rejected. Contact the administrator or try again.",
+      "cancelled": "Your request was automatically cancelled because you logged in successfully. If you still need to change your password, request a new reset.",
+      "none": "No active request. You can request a change.",
+      "changePassword": "Change password",
+      "newRequest": "New request",
+      "goToLogin": "Go to login"
+    },
+    "admin": {
+      "approve": "Approve password request",
+      "reject": "Reject password request",
+      "approved": "Password request approved",
+      "rejected": "Password request rejected",
+      "cancelled": "Request cancelled due to successful login"
+    }
+  },
+  "catalog": {
+    "loading": "Loading catalogs...",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "uploadedBy": "Uploaded by",
+      "date": "Date",
+      "actions": "Actions",
+      "preview": "Preview PDF",
+      "download": "Download PDF",
+      "delete": "Delete catalog"
+    },
+    "card": {
+      "download": "Download PDF",
+      "delete": "Delete",
+      "preview": "Preview PDF"
+    }
+  },
+  "approved": "Password reset request approved",
+  "rejected": "Password reset request rejected",
+  "cancelled": "Request cancelled by successful login",
+  "register": {
+    "successMessage": "Registration successful! Your account has been created but requires approval from an administrator before you can log in. Please contact an administrator to approve your account. Once approved, you can use your credentials to access the system.",
+    "preferredName": "Preferred Name",
+    "lastName": "Last Name",
+    "password": "Password",
+    "loading": "Registering...",
+    "button": "Register",
+    "backToLogin": "Back to login",
+    "title": "Register"
+  },
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Login",
+    "forgot": "Forgot password?",
+    "register": "Register",
+    "invalidCredentials": "Incorrect credentials",
+    "error": "Error logging in",
+    "notApproved": "Your account has not yet been approved by an administrator.",
+    "deactivated": "Your account has been deactivated. Please contact an administrator.",
+    "invalidServerResponse": "Invalid server response",
+    "userNotFound": "User does not exist",
+    "incorrectPassword": "Incorrect password",
+    "loading": "Loading..."
+  },
+  "dashboard": {
+    "welcome": "Welcome to the Dashboard",
+    "instructions": "Select an option from the menu to get started."
+  },
+  "sidebar": {
+    "users": "Users",
+    "catalog": "PDF Catalog"
+  },
+  "userMenu": {
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "appbar": {
+    "title": "Catalog"
+  },
+  "users": {
+    "addUser": "Add User",
+    "usernameCreated": "Username created",
+    "loginLink": "Login link",
+    "sendWhatsapp": "Send via WhatsApp",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "whatsappMsg": "Hello! Your account has been created. Your username is:",
+    "whatsappLogin": "Login here:",
+    "title": "User Manager",
+    "header": {
+      "user": "User",
+      "role": "Role",
+      "actions": "Actions"
+    },
+    "roles": {
+      "admin": "Admin",
+      "user": "User"
+    },
+    "loading": "Loading users...",
+    "activeTag": "Active",
+    "requestsTag": "Pending requests",
+    "inactiveTag": "Deactivated",
+    "reactivate": "Reactivate user"
+  },
+  "profile": {
+    "title": "User Profile",
+    "language": "Interface language",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "savePassword": "Save password",
+    "passwordShort": "The new password must be at least 6 characters.",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordChanged": "Password updated successfully.",
+    "passwordChangeError": "Error changing password."
+  },
+  "navbar": {
+    "catalog": "Catalog",
+    "users": "User Manager",
+    "catalogManager": "PDF Catalog Manager",
+    "dashboard": "Dashboard"
+  },
+  "delete": "Delete",
+  "deleteConfirmTitle": "Delete user?",
+  "cancel": "Cancel"
+}

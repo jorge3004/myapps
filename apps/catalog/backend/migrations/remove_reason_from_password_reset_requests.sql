@@ -1,0 +1,1 @@
+ALTER TABLE password_reset_requests DROP COLUMN reason;

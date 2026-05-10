@@ -1,0 +1,79 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Logs
+logs
+*.log
+*.log.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+*.local
+*.cache
+*.tmp
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Test
+*.test-results
+
+# Docs
+_docs/.DS_Store
+
+# Others
+*.bak
+*.orig
+
+# Ignore local docker files
+*.pid
+docker-compose.override.yml
+
+# Ignore generated PDFs
+*.pdf
+
+# Ignore uploads and temp files
+uploads/
+tmp/
+
+# Ignore compiled JS/TS
+*.tsbuildinfo
+
+# Ignore frontend build
+apps/*/frontend/.next/
+apps/*/frontend/.cache/
+apps/*/frontend/.turbo/
+
+# Ignore backend build
+apps/*/backend/.cache/
+
+# Ignore coverage
+apps/*/frontend/coverage/
+apps/*/backend/coverage/
+
+# Ignore local config
+apps/*/backend/.env.local
+apps/*/frontend/.env.local

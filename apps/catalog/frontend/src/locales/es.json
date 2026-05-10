@@ -1,0 +1,142 @@
+{
+  "search": {
+    "placeholder": "Buscar usuarios o catálogos...",
+    "users": "Buscar usuarios",
+    "catalogs": "Buscar catálogos"
+  },
+  "forgot": {
+    "form": {
+      "title": "Recuperar contraseña",
+      "username": "Usuario",
+      "submit": "Solicitar cambio",
+      "userNotFound": "Usuario no existe"
+    },
+    "status": {
+      "title": "Estado de recuperación",
+      "pending": "Tu solicitud está pendiente de autorización del administrador.",
+      "approved": "Tu solicitud fue aprobada. Puedes cambiar tu contraseña.",
+      "rejected": "Tu solicitud fue rechazada. Contacta al administrador o reintenta.",
+      "cancelled": "Tu solicitud fue anulada automáticamente porque iniciaste sesión exitosamente. Si aún necesitas cambiar tu contraseña, solicita un nuevo reseteo.",
+      "none": "No hay solicitud activa. Puedes solicitar un cambio.",
+      "changePassword": "Cambiar contraseña",
+      "newRequest": "Nueva solicitud",
+      "goToLogin": "Ir a login"
+    },
+    "admin": {
+      "approve": "Aprobar solicitud de contraseña",
+      "reject": "Rechazar solicitud de contraseña",
+      "approved": "Solicitud de contraseña aprobada",
+      "rejected": "Solicitud de contraseña rechazada",
+      "cancelled": "Solicitud anulada por login exitoso"
+    }
+  },
+  "register": {
+    "successMessage": "¡Registro exitoso! Tu cuenta ha sido creada, pero requiere aprobación de un administrador antes de poder iniciar sesión. Por favor, contacta a un administrador para que apruebe tu cuenta. Una vez aprobada, podrás usar tus credenciales para acceder al sistema.",
+    "preferredName": "Nombre preferido",
+    "lastName": "Apellido paterno",
+    "password": "Contraseña",
+    "loading": "Registrando...",
+    "button": "Registrarse",
+    "backToLogin": "Volver al login",
+    "title": "Registro"
+  },
+  "login": {
+    "title": "Iniciar sesión",
+    "username": "Usuario",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "loginButton": "Entrar",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "register": "Registrarse",
+    "invalidCredentials": "Credenciales incorrectas",
+    "error": "Error al iniciar sesión",
+    "notApproved": "Tu cuenta aún no ha sido aprobada por un administrador.",
+    "deactivated": "Tu cuenta ha sido desactivada. Contacta al administrador.",
+    "invalidServerResponse": "Respuesta inválida del servidor",
+    "userNotFound": "El usuario no existe",
+    "incorrectPassword": "Contraseña incorrecta",
+    "loading": "Cargando..."
+  },
+  "dashboard": {
+    "welcome": "Bienvenido al Dashboard",
+    "instructions": "Selecciona una opción del menú para comenzar."
+  },
+  "sidebar": {
+    "users": "Usuarios",
+    "catalog": "Catálogo PDF"
+  },
+  "userMenu": {
+    "profile": "Perfil",
+    "logout": "Cerrar sesión"
+  },
+  "appbar": {
+    "title": "Catálogo"
+  },
+  "users": {
+    "addUser": "Agregar usuario",
+    "usernameCreated": "Usuario creado",
+    "loginLink": "Enlace de acceso",
+    "sendWhatsapp": "Enviar por WhatsApp",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Copiado!",
+    "whatsappMsg": "¡Hola! Tu cuenta ha sido creada. Tu usuario es:",
+    "whatsappLogin": "Ingresa aquí:",
+    "title": "Gestor de Usuarios",
+    "header": {
+      "user": "Usuario",
+      "role": "Rol",
+      "actions": "Acciones"
+    },
+    "roles": {
+      "admin": "Administrador",
+      "user": "Usuario"
+    },
+    "loading": "Cargando usuarios...",
+    "activeTag": "Activos",
+    "requestsTag": "Solicitudes pendientes",
+    "inactiveTag": "Desactivados",
+    "reactivate": "Reactivar usuario"
+  },
+  "profile": {
+    "title": "Perfil de Usuario",
+    "language": "Idioma de la interfaz",
+    "changePassword": "Cambiar contraseña",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirmar nueva contraseña",
+    "savePassword": "Guardar contraseña",
+    "passwordShort": "La nueva contraseña debe tener al menos 6 caracteres.",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "passwordChanged": "Contraseña actualizada correctamente.",
+    "passwordChangeError": "Error al cambiar la contraseña."
+  },
+  "app": {
+    "connectionError": "No se pudo conectar con el servidor. Por favor, revisa tu conexión o contacta al administrador."
+  },
+  "navbar": {
+    "catalog": "Catálogo",
+    "users": "Gestor de Usuarios",
+    "catalogManager": "Gestor de Catálogos PDF",
+    "dashboard": "Panel de Control"
+  },
+  "delete": "Eliminar",
+  "deleteConfirmTitle": "¿Eliminar usuario?",
+  "cancel": "Cancelar",
+  "catalog": {
+    "table": {
+      "id": "ID",
+      "name": "Nombre",
+      "uploadedBy": "Subido por",
+      "date": "Fecha",
+      "actions": "Acciones",
+      "preview": "Vista previa PDF",
+      "download": "Descargar PDF",
+      "delete": "Eliminar catálogo"
+    },
+    "card": {
+      "download": "Descargar PDF",
+      "delete": "Eliminar",
+      "preview": "Vista previa PDF"
+    }
+  }
+}

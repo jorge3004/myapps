@@ -1,0 +1,45 @@
+/* Estilos globales responsivos para el frontend */
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', Arial, sans-serif;
+  background: #f5f6fa;
+}
+
+/* Ajustes para formularios y tablas en móvil */
+@media (max-width: 600px) {
+  .MuiTable-root, .MuiTableCell-root, .MuiTableRow-root {
+    font-size: 0.92rem;
+    padding: 6px 4px;
+  }
+  .MuiTableCell-root {
+    word-break: break-word;
+    max-width: 90vw;
+  }
+  .MuiTableContainer-root {
+    overflow-x: auto;
+  }
+  .MuiBox-root[role='main'] {
+    padding: 8px !important;
+  }
+  .MuiTypography-h4 {
+    font-size: 1.2rem !important;
+  }
+}
+
+/* Ajuste para inputs y botones en móvil */
+@media (max-width: 600px) {
+  .MuiTextField-root, .MuiButton-root {
+    font-size: 0.98rem;
+  }
+  .MuiButton-root {
+    min-width: 80px;
+    padding: 6px 10px;
+  }
+}

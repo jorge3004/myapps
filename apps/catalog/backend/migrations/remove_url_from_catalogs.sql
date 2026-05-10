@@ -1,0 +1,1 @@
+ALTER TABLE catalogs DROP COLUMN url;
