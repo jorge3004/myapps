@@ -1,0 +1,52 @@
+{
+    "_type": "export",
+    "__export_format": 4,
+    "__export_date": "2026-05-26T00:00:00.000Z",
+    "__export_source": "insomnia.desktop.app:v2026.5.26",
+    "resources": [
+        {
+            "_id": "wrk_application_management_test",
+            "created": 1716681600000,
+            "description": "Colección para probar Application Management API",
+            "modified": 1716681600000,
+            "name": "Application Management Test",
+            "_type": "workspace"
+        },
+        {
+            "_id": "req_register_app",
+            "parentId": "wrk_application_management_test",
+            "modified": 1716681600000,
+            "created": 1716681600000,
+            "url": "http://localhost:3000/api/apps/register",
+            "name": "Registrar aplicación",
+            "description": "Registra una nueva aplicación y genera API key",
+            "method": "POST",
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n  \"name\": \"MiApp\",\n  \"description\": \"App de ejemplo para test\"\n}"
+            },
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "_type": "request"
+        },
+        {
+            "_id": "req_list_apps",
+            "parentId": "wrk_application_management_test",
+            "modified": 1716681600000,
+            "created": 1716681600000,
+            "url": "http://localhost:3000/api/apps",
+            "name": "Listar aplicaciones",
+            "description": "Obtiene todas las aplicaciones registradas",
+            "method": "GET",
+            "body": {},
+            "parameters": [],
+            "headers": [],
+            "_type": "request"
+        }
+    ]
+}

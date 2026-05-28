@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "commonjs",
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "strict": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "baseUrl": "./src",
+        "ignoreDeprecations": "6.0",
+        "paths": {
+            "user-management/*": [
+                "../../../packages/user-management/dist/*"
+            ],
+            "application-management/*": [
+                "../../../packages/application-management/dist/*"
+            ]
+        }
+    },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
