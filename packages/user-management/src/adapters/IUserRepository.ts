@@ -14,5 +14,9 @@ export interface User {
     email: string;
     name: string;
     passwordHash: string;
+    scopes?: string[];
+    appIds?: string[];
+    rolesPorApp?: { [appId: string]: string };
+    revokedScopes?: string[];
     // ...otros campos
 }

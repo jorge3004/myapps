@@ -1,10 +1,19 @@
 import { Router } from 'express';
-import { listUsers, registerUser, getUserByEmail, getUserById, getUserApps } from '../controllers/userController';
+import { listUsers, registerUser, getUserByEmail, getUserById, getUserApps, getUserScopes, addUserScope, removeUserScope, addUserRevokedScope, removeUserRevokedScope } from '../controllers/userController';
+import { attachApiKeyScopes } from '../middleware/attachApiKeyScopes';
+import { requireScope } from '../middleware/requireScope';
+import { verifyUserToken } from '../middleware/auth';
 
 const router = Router();
 
-// GET /api/users (listado paginado)
-router.get('/', listUsers);
+// GET /api/users (listado paginado) — requiere scope de lectura de usuarios para la app
+router.get(
+    '/',
+    verifyUserToken,
+    attachApiKeyScopes,
+    requireScope({ appId: '*', action: 'read', resource: 'users' }),
+    listUsers
+);
 // POST /api/users
 router.post('/', registerUser);
 // GET /api/users/by-email/:email
@@ -13,5 +22,14 @@ router.get('/by-email/:email', getUserByEmail);
 router.get('/by-username/:username', getUserByEmail);
 router.get('/:userId/apps', getUserApps);
 router.get('/:userId', getUserById);
+
+// Gestión dinámica de scopes directos
+router.get('/:userId/scopes', verifyUserToken, getUserScopes);
+router.post('/:userId/scopes', verifyUserToken, addUserScope);
+router.delete('/:userId/scopes', verifyUserToken, removeUserScope);
+
+// Gestión dinámica de revokedScopes
+router.post('/:userId/revoked-scopes', verifyUserToken, addUserRevokedScope);
+router.delete('/:userId/revoked-scopes', verifyUserToken, removeUserRevokedScope);
 
 export default router;

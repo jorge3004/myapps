@@ -1,7 +1,42 @@
+
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { userService } from 'user-management';
-import { User } from '../types/user';
+import { User } from 'user-management/dist/adapters/IUserRepository';
+
+// Centralized role-to-scope mapping (should match user-management)
+export const ROLE_SCOPES: Record<string, string[]> = {
+    'admin': ['*'],
+    'user': ['read:users', 'read:catalogs'],
+    'editor': ['read:users', 'write:catalogs'],
+};
+
+export function deriveScopes(user: User): string[] {
+    const scopes = new Set<string>();
+    // 1. From rolesPorApp
+    if (user.rolesPorApp && user.appIds) {
+        for (const appId of user.appIds) {
+            const role = user.rolesPorApp[appId] || user.rolesPorApp['*'];
+            if (role && ROLE_SCOPES[role]) {
+                for (const scope of ROLE_SCOPES[role]) {
+                    if (scope === '*') {
+                        scopes.add('*');
+                    } else {
+                        scopes.add(`${appId}:${scope}`);
+                    }
+                }
+            }
+        }
+    }
+    // 2. Add direct user scopes (if any)
+    if (user.scopes && Array.isArray(user.scopes)) {
+        for (const s of user.scopes) {
+            scopes.add(s);
+        }
+    }
+    return Array.from(scopes);
+}
+import bcrypt from 'bcrypt';
 
 const router = Router();
 
@@ -31,25 +66,44 @@ const adminUser = {
 router.post('/login', async (req, res) => {
     try {
         const { username, password, appId } = req.body;
-        if (!username || !password || !appId) {
-            return res.status(400).json({ error: 'Username, password, and appId required' });
+        if (!username || !password) {
+            return res.status(400).json({ error: 'Username and password required' });
         }
         // Buscar usuario por username (en este modelo, username == name)
         const user: User | null = await userService.getUserByUsername
             ? await userService.getUserByUsername(username)
             : await userService.getUserByEmail(username);
-        if (!user || user.passwordHash !== password) {
+        if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        // Validar acceso a la app por appId
         const allowedAppIds = user.appIds || [];
-        const hasAccess = allowedAppIds.includes('*') || allowedAppIds.includes(appId);
+        // Si el usuario es admin global ('*'), permitir login sin appId
+        if (allowedAppIds.includes('*')) {
+            const rolesPorApp = user.rolesPorApp || {};
+            const role = rolesPorApp['*'] || 'admin';
+            const payload = {
+                type: 'user',
+                userId: user.id,
+                username: user.name,
+                appId: '*',
+                role,
+                appIds: allowedAppIds,
+                rolesPorApp,
+                scopes: deriveScopes(user)
+            };
+            const token = jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
+            return res.json({ token });
+        }
+        // Para usuarios normales, exigir appId
+        if (!appId) {
+            return res.status(400).json({ error: 'appId required for non-admin users' });
+        }
+        const hasAccess = allowedAppIds.includes(appId);
         if (!hasAccess) {
             return res.status(403).json({ error: 'User does not have access to this app' });
         }
-        // Determinar el rol para este appId
         const rolesPorApp = user.rolesPorApp || {};
-        const role = rolesPorApp[appId] || rolesPorApp['*'] || 'user';
+        const role = rolesPorApp[appId] || 'user';
         const payload = {
             type: 'user',
             userId: user.id,
@@ -57,7 +111,8 @@ router.post('/login', async (req, res) => {
             appId,
             role,
             appIds: allowedAppIds,
-            rolesPorApp
+            rolesPorApp,
+            scopes: deriveScopes(user)
         };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
         res.json({ token });

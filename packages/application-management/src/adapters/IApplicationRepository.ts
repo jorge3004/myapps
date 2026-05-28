@@ -21,5 +21,8 @@ export interface ApiKey {
     apiKey: string;
     scopes: string[];
     createdAt: Date;
+    revoked?: boolean;
+    revokedAt?: Date;
+    revokedBy?: string;
     // ...otros campos relevantes
 }

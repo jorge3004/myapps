@@ -33,5 +33,9 @@ export class UserService {
         return this.repo.findByEmail(email);
     }
 
+    async update(id: string, user: Partial<User>): Promise<User> {
+        if (!this.repo.update) throw new Error('update no implementado en el repositorio');
+        return this.repo.update(id, user);
+    }
     // ...otros métodos de negocio
 }
