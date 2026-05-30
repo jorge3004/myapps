@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes';
 import catalogRoutes from './routes/catalogRoutes';
 import appRoutes from './routes/appRoutes';
 import authTokenRoutes from './routes/authTokenRoutes';
+import auditRoutes from './routes/auditRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -20,6 +21,7 @@ app.use('/api/apps', appRoutes);
 app.use('/api/catalog', catalogRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/auth', authTokenRoutes);
+app.use('/api/audit-logs', auditRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

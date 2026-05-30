@@ -17,6 +17,18 @@
   - Es la combinación de ambos: scopes derivados del rol + scopes directos asignados al usuario (sin duplicados).
   - Es lo que realmente valida el backend para acceso.
 
+
+
+## Convención de IDs de usuario
+
+- Todos los usuarios (incluidos los iniciales) usan IDs únicos generados automáticamente.
+- Los IDs numéricos quedan obsoletos.
+- **En desarrollo/local:** Se usa una función simpleId() para generar IDs cortos y únicos (no criptográficos).
+- **IMPORTANTE:** Para producción, migrar a una solución robusta como [nanoid](https://github.com/ai/nanoid) para asegurar unicidad global y seguridad criptográfica.
+- Los usuarios iniciales pueden usar valores fijos tipo NanoID para facilitar pruebas y documentación.
+
+> ⚠️ **Advertencia:** La función simpleId() es solo para ambientes de desarrollo/local/testing. No garantiza unicidad global ni seguridad criptográfica. ¡Migrar a nanoid antes de producción!
+
 ## Ejemplo de respuesta del endpoint `/api/users/:userId/scopes`
 
 ```json

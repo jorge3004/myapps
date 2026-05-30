@@ -1,3 +1,8 @@
+
+import { simpleId } from '../utils/id';
+import { logAudit } from '../audit/auditLog';
+
+
 // Añadir un scope directo al usuario
 export const addUserScope = async (req: Request, res: Response) => {
     try {
@@ -21,6 +26,16 @@ export const addUserScope = async (req: Request, res: Response) => {
         user.scopes = Array.isArray(user.scopes) ? user.scopes : [];
         if (!user.scopes.includes(scope)) user.scopes.push(scope);
         await userService.update(userId, { scopes: user.scopes });
+        // Auditoría
+        const actor = (req as any).user || {};
+        logAudit({
+            actorId: actor.id || actor.userId || 'unknown',
+            actorEmail: actor.email,
+            action: 'add_scope',
+            targetType: 'user',
+            targetId: userId,
+            details: { scopeAdded: scope }
+        });
         res.json({ userId, scopes: user.scopes });
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
@@ -36,7 +51,7 @@ export const removeUserScope = async (req: Request, res: Response) => {
         const user: User | null = await userService.getUserById(userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
         user.scopes = Array.isArray(user.scopes) ? user.scopes : [];
-        user.scopes = user.scopes.filter(s => s !== scope);
+        user.scopes = user.scopes.filter((s: string) => s !== scope);
         await userService.update(userId, { scopes: user.scopes });
         res.json({ userId, scopes: user.scopes });
     } catch (error) {
@@ -212,8 +227,8 @@ export const registerUser = async (req: Request, res: Response) => {
         if (!password || typeof password !== 'string' || password.length < 4) {
             return res.status(400).json({ error: 'Password is required and must be at least 4 characters.' });
         }
-        // Generar userId único si no se provee
-        const userId = id || randomUUID();
+        // Generar userId único si no se provee (ID corto, robusto y sin dependencias externas)
+        const userId = id || simpleId();
         const passwordHash = await bcrypt.hash(password, 10);
         const user: User = {
             id: userId,
@@ -224,6 +239,23 @@ export const registerUser = async (req: Request, res: Response) => {
             rolesPorApp: rolesPorApp || {}
         };
         const created = await userService.register(user);
+
+        // Auditoría: registrar creación de usuario
+        const actor = (req as any).user || {};
+        logAudit({
+            actorId: actor.id || actor.userId || 'unknown',
+            actorEmail: actor.email,
+            action: 'create_user',
+            targetType: 'user',
+            targetId: userId,
+            details: {
+                email: user.email,
+                name: user.name,
+                appIds: user.appIds,
+                rolesPorApp: user.rolesPorApp
+            }
+        });
+
         res.status(201).json(created);
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });

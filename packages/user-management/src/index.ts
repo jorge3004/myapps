@@ -36,38 +36,35 @@ function scopesFromRoles(rolesPorApp: { [appId: string]: string }, appIds: strin
     return Array.from(scopes);
 }
 
+
+// IDs fijos tipo NanoID para usuarios iniciales
 const adminUser: User = {
-    id: '1',
+    id: 'admin1234567890abcdef',
     email: 'jorge',
     name: 'jorge',
     passwordHash: bcrypt.hashSync('jorge123', 10),
     appIds: ['*'],
     rolesPorApp: { '*': 'admin' }
-    // scopes: [] // Solo agregar si hay excepciones
 };
 userRepo.create(adminUser);
 
-// Usuario test de ejemplo
 const testUser: User = {
-    id: '2',
+    id: 'test1234567890abcdefg',
     email: 'test',
     name: 'test',
     passwordHash: bcrypt.hashSync('test123', 10),
     appIds: ['ratw3urj'],
     rolesPorApp: { 'ratw3urj': 'user' }
-    // scopes: []
 };
 userRepo.create(testUser);
 
-// Usuario editor de ejemplo
 const editorUser: User = {
-    id: '3',
+    id: 'editor1234567890abcde',
     email: 'editor',
     name: 'editor',
     passwordHash: bcrypt.hashSync('editor123', 10),
     appIds: ['ratw3urj'],
     rolesPorApp: { 'ratw3urj': 'editor' },
-    // scopes: ['ratw3urj:edit:product'], // Puedes agregarlo manualmente vía endpoint
     revokedScopes: ['ratw3urj:write:catalogs']
 };
 userRepo.create(editorUser);

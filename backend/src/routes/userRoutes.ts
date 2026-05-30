@@ -15,7 +15,12 @@ router.get(
     listUsers
 );
 // POST /api/users
-router.post('/', registerUser);
+router.post(
+    '/',
+    verifyUserToken,
+    requireScope({ appId: '*', action: 'write', resource: 'users' }),
+    registerUser
+);
 // GET /api/users/by-email/:email
 router.get('/by-email/:email', getUserByEmail);
 // GET /api/users/by-username/:username
