@@ -1,5 +1,14 @@
 
-import { simpleId } from '../utils/id';
+/**
+ * getNanoId - Generador de IDs robustos usando nanoid (para producción y desarrollo).
+ * Uso: const id = await getNanoId(16);
+ *
+ * Si necesitas reutilizar esta función en otros módulos, muévela a un archivo utils/id.ts.
+ */
+async function getNanoId(length = 16): Promise<string> {
+    const { nanoid } = await import('nanoid');
+    return nanoid(length);
+}
 import { logAudit } from '../audit/auditLog';
 
 
@@ -227,8 +236,8 @@ export const registerUser = async (req: Request, res: Response) => {
         if (!password || typeof password !== 'string' || password.length < 4) {
             return res.status(400).json({ error: 'Password is required and must be at least 4 characters.' });
         }
-        // Generar userId único si no se provee (ID corto, robusto y sin dependencias externas)
-        const userId = id || simpleId();
+        // Generar userId único con nanoid en todos los entornos
+        const userId = id || await getNanoId(16);
         const passwordHash = await bcrypt.hash(password, 10);
         const user: User = {
             id: userId,

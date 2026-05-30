@@ -1,0 +1,1 @@
+Este archivo fue eliminado porque la función getNanoId ahora está directamente en userController.ts. Si necesitas reutilizar la generación de IDs en otros módulos, considera volver a crear un utilitario compartido.
