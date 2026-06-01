@@ -1,13 +1,6 @@
 
-/**
- * getNanoId - Generador de IDs robustos usando nanoid (para producción y desarrollo).
- * Uso: const id = await getNanoId(16);
- *
- * Si necesitas reutilizar esta función en otros módulos, muévela a un archivo utils/id.ts.
- */
-async function getNanoId(length = 16): Promise<string> {
-    const { nanoid } = await import('nanoid');
-    return nanoid(length);
+function getUserId(length = 16): string {
+    return randomUUID().replace(/-/g, '').slice(0, length);
 }
 import { logAudit } from '../audit/auditLog';
 
@@ -142,11 +135,18 @@ export const getUserScopes = async (req: Request, res: Response) => {
         }
         const user: User | null = await userService.getUserById ? await userService.getUserById(userId) : null;
         if (!user) return res.status(404).json({ error: 'User not found' });
+        const appRoles = await userService.getUserAppRoles(userId);
+        const rolesPorApp = appRoles.reduce((acc: Record<string, string>, row: { appId: string; role: string }) => {
+            acc[row.appId] = row.role;
+            return acc;
+        }, {});
+        const appIds = appRoles.map((row: { appId: string; role: string }) => row.appId);
+
         // Derived from roles
         let derivedScopes: string[] = [];
-        if (user.rolesPorApp && user.appIds) {
-            for (const appId of user.appIds) {
-                const role = user.rolesPorApp[appId] || user.rolesPorApp['*'];
+        if (appIds.length > 0) {
+            for (const appId of appIds) {
+                const role = rolesPorApp[appId] || rolesPorApp['*'];
                 if (role && ROLE_SCOPES[role]) {
                     for (const scope of ROLE_SCOPES[role]) {
                         if (scope === '*') {
@@ -171,12 +171,12 @@ export const getUserScopes = async (req: Request, res: Response) => {
 };
 // Listar usuarios con paginación estándar
 import { Request, Response } from 'express';
-import { userService } from 'user-management';
-import { User } from 'user-management/dist/adapters/IUserRepository';
+import * as userService from '../services/userService';
+type User = any;
 import { randomUUID } from 'crypto';
 import bcrypt from 'bcrypt';
 // Devuelve la lista de apps permitidas para el usuario autenticado
-import { applicationService } from 'application-management';
+import * as appService from '../services/appService';
 
 export const listUsers = async (req: Request, res: Response) => {
     try {
@@ -205,8 +205,9 @@ export const getUserApps = async (req: Request, res: Response) => {
         if (!userId) return res.status(400).json({ error: 'userId required' });
         const user: User | null = await userService.getUserById ? await userService.getUserById(userId) : null;
         if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-        const allApps = await applicationService.listApplications();
-        const allowedAppIds = user.appIds || [];
+        const allApps = await appService.listApplications();
+        const appRoles = await userService.getUserAppRoles(String(userId));
+        const allowedAppIds = appRoles.map((row: { appId: string; role: string }) => row.appId);
         // '*' significa acceso a todas las apps
         const apps = allowedAppIds.includes('*')
             ? allApps
@@ -232,22 +233,36 @@ export const getUserById = async (req: Request, res: Response) => {
 export const registerUser = async (req: Request, res: Response) => {
     try {
         // Permitir username como alias de name
-        let { id, email, name, username, password, appIds, rolesPorApp } = req.body;
+        let { id, email, name, username, password, appIds, rolesPorApp, role, scopes, revokedScopes } = req.body;
         if (!password || typeof password !== 'string' || password.length < 4) {
             return res.status(400).json({ error: 'Password is required and must be at least 4 characters.' });
         }
-        // Generar userId único con nanoid en todos los entornos
-        const userId = id || await getNanoId(16);
+        const resolvedUsername = username || name || email;
+        if (!resolvedUsername || typeof resolvedUsername !== 'string') {
+            return res.status(400).json({ error: 'username is required' });
+        }
+
+        const userId = id || getUserId(16);
         const passwordHash = await bcrypt.hash(password, 10);
+        const normalizedAppIds = Array.isArray(appIds) ? appIds.filter((appId: unknown) => typeof appId === 'string' && appId.trim()) : [];
+        const normalizedRolesPorApp = rolesPorApp && typeof rolesPorApp === 'object' ? rolesPorApp : {};
+        const appRoleEntries = normalizedAppIds.map((appId: string) => ({
+            appId,
+            role: typeof normalizedRolesPorApp[appId] === 'string' ? normalizedRolesPorApp[appId] : (role || 'user')
+        }));
+        const resolvedRole = typeof role === 'string'
+            ? role
+            : (appRoleEntries[0]?.role || 'user');
         const user: User = {
             id: userId,
-            email: email || username || name,
-            name: username || name || email,
+            username: resolvedUsername,
+            email: email || resolvedUsername,
             passwordHash,
-            appIds: appIds || [],
-            rolesPorApp: rolesPorApp || {}
+            role: resolvedRole,
+            scopes: Array.isArray(scopes) ? scopes : [],
+            revokedScopes: Array.isArray(revokedScopes) ? revokedScopes : []
         };
-        const created = await userService.register(user);
+        const created = await userService.register(user, appRoleEntries);
 
         // Auditoría: registrar creación de usuario
         const actor = (req as any).user || {};
@@ -259,9 +274,9 @@ export const registerUser = async (req: Request, res: Response) => {
             targetId: userId,
             details: {
                 email: user.email,
-                name: user.name,
-                appIds: user.appIds,
-                rolesPorApp: user.rolesPorApp
+                username: user.username,
+                appIds: normalizedAppIds,
+                rolesPorApp: normalizedRolesPorApp
             }
         });
 
@@ -274,12 +289,10 @@ export const registerUser = async (req: Request, res: Response) => {
 
 export const getUserByEmail = async (req: Request, res: Response) => {
     try {
-        // Permitir búsqueda por username o email
-        const { email, username } = req.params;
+        // Permitir búsqueda solo por email
+        const { email } = req.params;
         let user: User | null = null;
-        if (username) {
-            user = await userService.getUserByUsername(username);
-        } else if (email) {
+        if (email) {
             user = await userService.getUserByEmail(email);
         }
         if (!user) return res.status(404).json({ error: 'No encontrado' });
