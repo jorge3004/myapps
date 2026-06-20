@@ -1,44 +1,27 @@
-// MySQL-backed app service
-import * as appModel from '../models/app';
+// datasource-agnostic app service
 import { App, ApiKey } from '../models/app';
-import { randomUUID } from 'crypto';
-
-export const APP_DATA_SOURCE = 'mysql';
+import { getAppRepository, getDataSource } from '../repositories';
 
 export async function listApplications(): Promise<(App & { apiKeys: ApiKey[] })[]> {
-    const apps = await appModel.listApps();
-    const result = await Promise.all(
-        apps.map(async (app) => ({
-            ...app,
-            apiKeys: await appModel.getApiKeysForApp(app.id)
-        }))
-    );
-    return result;
+    return getAppRepository().listApplications();
 }
 
 export async function getApplicationById(id: string): Promise<(App & { apiKeys: ApiKey[] }) | null> {
-    const app = await appModel.getAppById(id);
-    if (!app) return null;
-    return { ...app, apiKeys: await appModel.getApiKeysForApp(id) };
+    return getAppRepository().getApplicationById(id);
 }
 
 export async function register({ name, description }: { name: string; description?: string }): Promise<App & { apiKeys: ApiKey[] }> {
-    const id = randomUUID().replace(/-/g, '').slice(0, 16);
-    const app = await appModel.createApp({ id, name, description });
-    return { ...app, apiKeys: [] };
+    return getAppRepository().register({ name, description });
 }
 
 export async function addApiKey(appId: string, scopes: string[] = ['*']): Promise<ApiKey> {
-    const id = randomUUID().replace(/-/g, '').slice(0, 16);
-    const key = randomUUID().replace(/-/g, '');
-    return appModel.insertApiKey({ id, appId, apiKey: key, scopes });
+    return getAppRepository().addApiKey(appId, scopes);
 }
 
 export async function revokeApiKey(appId: string, apiKey: string, revokedBy?: string): Promise<(App & { apiKeys: ApiKey[] }) | null> {
-    await appModel.revokeApiKeyById(apiKey, revokedBy);
-    return getApplicationById(appId);
+    return getAppRepository().revokeApiKey(appId, apiKey, revokedBy);
 }
 
 export function getAppDataSource(): string {
-    return APP_DATA_SOURCE;
+    return getDataSource();
 }

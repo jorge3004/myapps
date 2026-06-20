@@ -13,8 +13,14 @@ function getUserFromLocalStorage() {
 
 // Auxiliar: obtener usuario desde API
 async function fetchUserFromApi(apiUrl, token) {
+    const runtimeEnv = (localStorage.getItem('runtime:selectedEnvironment') || 'dev').toLowerCase();
+    const dataSource = (localStorage.getItem('runtime:selectedDataSource') || 'mysql').toLowerCase();
     const res = await fetch(apiUrl + '/users/me', {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'x-runtime-env': runtimeEnv,
+            'x-data-source': dataSource
+        },
     });
     if (!res.ok) throw new Error('invalid-token');
     const data = await res.json();
@@ -67,7 +73,14 @@ export function useAuthLogic() {
             setLoading(false);
             return;
         }
-        fetch(apiUrl + '/health')
+        const runtimeEnv = (localStorage.getItem('runtime:selectedEnvironment') || 'dev').toLowerCase();
+        const dataSource = (localStorage.getItem('runtime:selectedDataSource') || 'mysql').toLowerCase();
+        fetch(apiUrl + '/health', {
+            headers: {
+                'x-runtime-env': runtimeEnv,
+                'x-data-source': dataSource
+            }
+        })
             .then(async (res) => {
                 if (!res.ok) {
                     setApiError(true);

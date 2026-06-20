@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { applicationService } from 'application-management';
+import * as applicationService from '../services/appService';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 const TOKEN_EXPIRATION = '1h';

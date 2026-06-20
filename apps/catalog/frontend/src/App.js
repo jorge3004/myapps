@@ -8,6 +8,7 @@ import './i18n';
 import { useTranslation } from 'react-i18next';
 import './global.css';
 import { useThemeContext, ThemeProviderCustom } from './context/ThemeContext';
+import RuntimeSourcePanel from './components/RuntimeSourcePanel';
 
 function App() {
     const { i18n } = useTranslation();
@@ -28,6 +29,7 @@ function App() {
                     <BrowserRouter>
                         <AppWithAuthLoader />
                     </BrowserRouter>
+                    <RuntimeSourcePanel />
                 </AuthProvider>
             </ThemeProviderWrapper>
         </ThemeProviderCustom>
