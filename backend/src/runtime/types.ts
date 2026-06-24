@@ -15,7 +15,7 @@ export interface RuntimeResolvedContext {
     servedDataSource: DataSource;
     operation: RuntimeOperation;
     fallbackApplied: boolean;
-    mysqlAvailable: boolean;
+    mysqlAvailable: boolean | null;
     allowWrite: boolean;
     reason?: string;
 }

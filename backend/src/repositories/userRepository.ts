@@ -18,4 +18,6 @@ export interface IUserRepository {
     listAllUsers(): Promise<User[]>;
     updateUserScopes(id: string, scopes: string[], revokedScopes: string[]): Promise<void>;
     getUserAppRoles(userId: string): Promise<AppRole[]>;
+    upsertUserAppRole(userId: string, appId: string, role: string): Promise<void>;
+    removeUserAppRole(userId: string, appId: string): Promise<void>;
 }

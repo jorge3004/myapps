@@ -218,6 +218,61 @@ export const getUserApps = async (req: Request, res: Response) => {
     }
 };
 
+export const assignUserAppRole = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+        const { appId, role } = req.body || {};
+
+        if (!userId) return res.status(400).json({ error: 'userId required' });
+        if (!appId || typeof appId !== 'string') return res.status(400).json({ error: 'appId required' });
+        const resolvedRole = typeof role === 'string' && role.trim() ? role : 'user';
+
+        if (!ROLE_SCOPES[resolvedRole]) {
+            return res.status(400).json({ error: 'Invalid role. Allowed: admin, user, editor' });
+        }
+
+        const user: User | null = await userService.getUserById(userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const app = await appService.getApplicationById(appId);
+        if (!app) return res.status(404).json({ error: 'App not found' });
+
+        await userService.assignUserToApp(userId, appId, resolvedRole);
+        const appRoles = await userService.getUserAppRoles(userId);
+
+        res.json({
+            userId,
+            appId,
+            role: resolvedRole,
+            appRoles
+        });
+    } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
+    }
+};
+
+export const removeUserAppRole = async (req: Request, res: Response) => {
+    try {
+        const { userId, appId } = req.params;
+        if (!userId) return res.status(400).json({ error: 'userId required' });
+        if (!appId) return res.status(400).json({ error: 'appId required' });
+
+        const user: User | null = await userService.getUserById(userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        await userService.removeUserFromApp(userId, appId);
+        const appRoles = await userService.getUserAppRoles(userId);
+
+        res.json({
+            userId,
+            removedAppId: appId,
+            appRoles
+        });
+    } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
+    }
+};
+
 export const getUserById = async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;

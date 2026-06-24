@@ -17,8 +17,9 @@ function buildDefaultContext(): RuntimeResolvedContext {
         servedDataSource,
         operation: 'read',
         fallbackApplied: false,
-        mysqlAvailable: true,
-        allowWrite: true
+        mysqlAvailable: null,
+        allowWrite: true,
+        reason: 'runtime_context_default_no_health_check'
     };
 }
 

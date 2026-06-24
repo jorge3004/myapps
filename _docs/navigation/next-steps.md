@@ -1,5 +1,12 @@
 # Siguientes pasos recomendados
 
+Nota de navegacion (2026-06-24):
+- Estado actual + siguiente inmediato: [START_HERE.md](START_HERE.md)
+- Mapa de documentacion por objetivo: [DOCS_MAP.md](DOCS_MAP.md)
+- Historial de cambios: [IMPLEMENTATION_TIMELINE.md](IMPLEMENTATION_TIMELINE.md)
+
+Este archivo se mantiene como backlog tecnico y notas de continuidad.
+
 1. **Auditoría de acciones y cambios de permisos**
    - Implementar logs/auditoría para registrar quién, cuándo y qué cambios realiza sobre scopes, roles y usuarios.
    - Guardar información relevante: usuario que realiza la acción, usuario afectado, tipo de cambio, timestamp, valores antes/después.
@@ -140,6 +147,6 @@ Al inicio de cada documento técnico, incluir:
 
 ### 5. Prioridad de lectura
 Cuando haya conflicto entre documentos:
-1. Endpoint guide actual: [ENDPOINTS_GUIDE.md](ENDPOINTS_GUIDE.md)
+1. Endpoint guide actual: [ENDPOINTS_GUIDE.md](../testing/ENDPOINTS_GUIDE.md)
 2. Timeline de cambios: [IMPLEMENTATION_TIMELINE.md](IMPLEMENTATION_TIMELINE.md)
 3. Documentos históricos fechados (arquitectura inicial, avances antiguos, etc.)

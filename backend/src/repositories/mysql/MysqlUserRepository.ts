@@ -75,4 +75,20 @@ export class MysqlUserRepository implements IUserRepository {
         );
         return (rows || []).map((row: any) => ({ appId: row.app_id, role: row.role }));
     }
+
+    async upsertUserAppRole(userId: string, appId: string, role: string): Promise<void> {
+        await pool.execute(
+            `INSERT INTO user_apps (user_id, app_id, role)
+             VALUES (?, ?, ?)
+             ON DUPLICATE KEY UPDATE role = VALUES(role)`,
+            [userId, appId, role]
+        );
+    }
+
+    async removeUserAppRole(userId: string, appId: string): Promise<void> {
+        await pool.execute(
+            'DELETE FROM user_apps WHERE user_id = ? AND app_id = ?',
+            [userId, appId]
+        );
+    }
 }

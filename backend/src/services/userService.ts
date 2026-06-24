@@ -31,6 +31,14 @@ export async function getUserAppRoles(userId: string): Promise<Array<{ appId: st
     return getUserRepository().getUserAppRoles(userId);
 }
 
+export async function assignUserToApp(userId: string, appId: string, role: string): Promise<void> {
+    await getUserRepository().upsertUserAppRole(userId, appId, role);
+}
+
+export async function removeUserFromApp(userId: string, appId: string): Promise<void> {
+    await getUserRepository().removeUserAppRole(userId, appId);
+}
+
 export function getUserDataSource(): string {
     return getDataSource();
 }

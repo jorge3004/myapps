@@ -36,3 +36,4 @@
 - El middleware de autorización extrae el contexto de app del JWT.
 - Si se autentica sin `appId`, se asume la app por defecto.
 - El campo de usuario para login es `username` (no `email`).
+- Para el modelo completo de autorizacion (acceso a app + permisos granulares), ver [AUTHZ_MODEL_V2.md](AUTHZ_MODEL_V2.md).

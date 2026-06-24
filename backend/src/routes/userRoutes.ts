@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { listUsers, registerUser, getUserByEmail, getUserById, getUserApps, getUserScopes, addUserScope, removeUserScope, addUserRevokedScope, removeUserRevokedScope } from '../controllers/userController';
+import { listUsers, registerUser, getUserByEmail, getUserById, getUserApps, getUserScopes, addUserScope, removeUserScope, addUserRevokedScope, removeUserRevokedScope, assignUserAppRole, removeUserAppRole } from '../controllers/userController';
 import { attachApiKeyScopes } from '../middleware/attachApiKeyScopes';
 import { requireScope } from '../middleware/requireScope';
 import { verifyUserToken } from '../middleware/auth';
@@ -26,6 +26,8 @@ router.get('/by-email/:email', getUserByEmail);
 // GET /api/users/by-username/:username
 router.get('/by-username/:username', getUserByEmail);
 router.get('/:userId/apps', getUserApps);
+router.post('/:userId/apps', verifyUserToken, requireScope({ appId: '*', action: 'write', resource: 'users' }), assignUserAppRole);
+router.delete('/:userId/apps/:appId', verifyUserToken, requireScope({ appId: '*', action: 'write', resource: 'users' }), removeUserAppRole);
 router.get('/:userId', getUserById);
 
 // Gestión dinámica de scopes directos

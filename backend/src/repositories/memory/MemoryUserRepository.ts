@@ -61,4 +61,21 @@ export class MemoryUserRepository implements IUserRepository {
     async getUserAppRoles(userId: string): Promise<AppRole[]> {
         return (userApps.get(userId) || []).map((item) => ({ ...item }));
     }
+
+    async upsertUserAppRole(userId: string, appId: string, role: string): Promise<void> {
+        const existing = userApps.get(userId) || [];
+        const current = existing.find((item) => item.appId === appId);
+        if (current) {
+            current.role = role;
+        } else {
+            existing.push({ appId, role });
+        }
+        userApps.set(userId, existing.map((item) => ({ ...item })));
+    }
+
+    async removeUserAppRole(userId: string, appId: string): Promise<void> {
+        const existing = userApps.get(userId) || [];
+        const filtered = existing.filter((item) => item.appId !== appId);
+        userApps.set(userId, filtered.map((item) => ({ ...item })));
+    }
 }

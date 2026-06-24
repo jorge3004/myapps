@@ -7,10 +7,9 @@ import catalogRoutes from './routes/catalogRoutes';
 import appRoutes from './routes/appRoutes';
 import authTokenRoutes from './routes/authTokenRoutes';
 import auditRoutes from './routes/auditRoutes';
-import { getUserDataSource } from './services/userService';
-import { getAppDataSource } from './services/appService';
+import * as runtimeRoutesImport from './routes/runtimeRoutes';
+const runtimeRoutes = (runtimeRoutesImport as any).default || runtimeRoutesImport;
 import { runtimeContextMiddleware } from './middleware/runtimeContext';
-import { getRuntimeConfig, getRuntimeInfo } from './repositories';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -28,54 +27,7 @@ app.use('/api/catalog', catalogRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/auth', authTokenRoutes);
 app.use('/api/audit-logs', auditRoutes);
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.get('/api/health/data-source', (req, res) => {
-  const runtime = getRuntimeInfo();
-  res.json({
-    status: 'ok',
-    requestedEnvironment: runtime.requestedEnvironment,
-    servedEnvironment: runtime.servedEnvironment,
-    userDataSource: getUserDataSource(),
-    appDataSource: getAppDataSource(),
-    fallbackApplied: runtime.fallbackApplied,
-    mysqlAvailable: runtime.mysqlAvailable,
-    reason: runtime.reason || null
-  });
-});
-
-app.get('/api/runtime/status', (req, res) => {
-  const runtime = getRuntimeInfo();
-  const config = getRuntimeConfig();
-  res.json({
-    status: 'ok',
-    current: {
-      requestedEnvironment: runtime.requestedEnvironment,
-      servedEnvironment: runtime.servedEnvironment,
-      requestedDataSource: runtime.requestedDataSource,
-      servedDataSource: runtime.servedDataSource,
-      fallbackApplied: runtime.fallbackApplied,
-      mysqlAvailable: runtime.mysqlAvailable,
-      operation: runtime.operation,
-      reason: runtime.reason || null
-    },
-    defaults: {
-      environment: config.defaultEnvironment,
-      dataSource: config.defaultDataSource
-    },
-    available: {
-      environments: config.allowedEnvironments,
-      dataSources: config.allowedDataSources
-    },
-    policy: {
-      fallbackReadToMemory: config.fallbackReadToMemory,
-      readSemanticPostRoutes: config.readSemanticPostRoutes
-    }
-  });
-});
+app.use('/api', runtimeRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend listening on port ${PORT}`);

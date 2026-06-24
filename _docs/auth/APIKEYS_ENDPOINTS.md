@@ -5,8 +5,8 @@ Estado: active
 Ambito: especializado (reglas de interpretacion API keys)
 
 Relacion con otros documentos:
-- Inventario completo de endpoints: [ENDPOINTS_GUIDE.md](ENDPOINTS_GUIDE.md)
-- Historial de cambios: [IMPLEMENTATION_TIMELINE.md](IMPLEMENTATION_TIMELINE.md)
+- Inventario completo de endpoints: [ENDPOINTS_GUIDE.md](../testing/ENDPOINTS_GUIDE.md)
+- Historial de cambios: [IMPLEMENTATION_TIMELINE.md](../navigation/IMPLEMENTATION_TIMELINE.md)
 
 **Revocación global de API keys (recomendado):**
 
