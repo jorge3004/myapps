@@ -100,3 +100,19 @@ Resultado esperado: `200` con `token`.
 En resumen:
 - Para permisos finos: `POST /api/users/:userId/scopes`
 - Para permitir login con una app específica: `POST /api/users/:userId/apps`
+
+## Tests automatizados (auth/authz)
+
+Existe una suite automatizada para reglas de auth/authz y middleware:
+- Ver [AUTHZ_AUTOMATED_TESTS.md](AUTHZ_AUTOMATED_TESTS.md)
+
+Comandos:
+
+```bash
+npm run test
+npm run test:authz
+```
+
+Importante:
+- Estos tests actuales no tocan MySQL.
+- No levantan servidor ni ejecutan queries SQL.

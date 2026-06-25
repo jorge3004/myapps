@@ -3,6 +3,7 @@ import { listUsers, registerUser, getUserByEmail, getUserById, getUserApps, getU
 import { attachApiKeyScopes } from '../middleware/attachApiKeyScopes';
 import { requireScope } from '../middleware/requireScope';
 import { verifyUserToken } from '../middleware/auth';
+import { requireAppAccess } from '../middleware/requireAppAccess';
 
 const router = Router();
 
@@ -26,8 +27,8 @@ router.get('/by-email/:email', getUserByEmail);
 // GET /api/users/by-username/:username
 router.get('/by-username/:username', getUserByEmail);
 router.get('/:userId/apps', getUserApps);
-router.post('/:userId/apps', verifyUserToken, requireScope({ appId: '*', action: 'write', resource: 'users' }), assignUserAppRole);
-router.delete('/:userId/apps/:appId', verifyUserToken, requireScope({ appId: '*', action: 'write', resource: 'users' }), removeUserAppRole);
+router.post('/:userId/apps', verifyUserToken, requireScope({ appId: '*', action: 'write', resource: 'users' }), requireAppAccess({ source: 'body' }), assignUserAppRole);
+router.delete('/:userId/apps/:appId', verifyUserToken, requireScope({ appId: '*', action: 'write', resource: 'users' }), requireAppAccess({ source: 'params' }), removeUserAppRole);
 router.get('/:userId', getUserById);
 
 // Gestión dinámica de scopes directos

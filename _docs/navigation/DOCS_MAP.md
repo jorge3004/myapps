@@ -12,9 +12,10 @@ Ambito: actual
 
 ### 2) Quiero entender login, acceso a app y permisos
 - [authz/00_README.md](../authz/00_README.md)
-- [AUTHZ_MODEL_V2.md](../auth/AUTHZ_MODEL_V2.md)
+- [AUTHZ_MODEL_V2.md](../authz/AUTHZ_MODEL_V2.md)
 - [authentication-design.md](../auth/authentication-design.md)
-- [SCOPE_CONVENTION.md](../auth/SCOPE_CONVENTION.md)
+- [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md)
+- [AUTH_AUTHZ_GLOSSARY.md](AUTH_AUTHZ_GLOSSARY.md)
 
 ### 3) Quiero saber que cambio y cuando
 - [IMPLEMENTATION_TIMELINE.md](IMPLEMENTATION_TIMELINE.md)
@@ -32,7 +33,7 @@ Si uno queda obsoleto, marcarlo como superseded en lugar de borrarlo.
 ## Convencion de carpetas aplicada
 
 - _docs/authz: version modular por capas
-- _docs/auth: autenticacion, autorizacion, scopes y apikeys
+- _docs/auth: autenticacion e identidad
 - _docs/runtime: runtime y observabilidad
 - _docs/data: esquema, relaciones y flujo DB
 - _docs/testing: guias de prueba funcional

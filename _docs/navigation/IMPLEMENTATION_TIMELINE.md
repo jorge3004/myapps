@@ -46,7 +46,7 @@ Este archivo es la fuente central de historial tecnico para saber que cambio, cu
 - Impacto: seguridad y trazabilidad de permisos.
 - Referencias:
   - [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md)
-  - [SCOPE_CONVENTION.md](../auth/SCOPE_CONVENTION.md)
+  - [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md)
   - [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md)
   - [auditoria-y-rotacion-apikeys-2026-05-28.md](../history/auditoria-y-rotacion-apikeys-2026-05-28.md)
 

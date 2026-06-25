@@ -6,11 +6,12 @@ import { revokeApiKey } from '../controllers/appController';
 import { Router } from 'express';
 import { registerApp, listApps, addApiKey } from '../controllers/appController';
 import { verifyToken, requireRole } from '../middleware/auth';
+import { requireAppAccess } from '../middleware/requireAppAccess';
 
 const router = Router();
-router.post('/:appId/apikeys/:apiKey/revoke', verifyToken, requireRole('admin'), revokeApiKey);
+router.post('/:appId/apikeys/:apiKey/revoke', verifyToken, requireRole('admin'), requireAppAccess({ source: 'params' }), revokeApiKey);
 // Crear nueva API key para una app existente
-router.post('/:appId/apikeys', verifyToken, requireRole('admin'), addApiKey);
+router.post('/:appId/apikeys', verifyToken, requireRole('admin'), requireAppAccess({ source: 'params' }), addApiKey);
 router.delete('/apikeys/:apiKey', verifyToken, requireRole('admin'), revokeApiKeyGlobal);
 
 // POST /api/apps (solo admin)

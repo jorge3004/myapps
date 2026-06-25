@@ -10,7 +10,7 @@ Entrar != operar
 
 ## Matriz
 
-| Caso | Authentication | App Access Gate | Resource Authorization |
+| Caso | Identity Prerequisite (AuthN) | App Access Gate | Resource Authorization |
 |---|---|---|---|
 | Login user con appId | Si | Si (user_apps) | No en login |
 | Login app por api key | Si | Implicito por api key valida | No en login |
@@ -21,11 +21,11 @@ Entrar != operar
 
 ```mermaid
 graph TD
-	A[Authentication] --> B[App Access Gate]
+	A[Identity Prerequisite] --> B[App Access Gate]
 	B --> C[Resource Authorization]
 	C --> D{Allow access}
 	D -->|Yes| E[200 OK]
 	D -->|No| F[403 Forbidden]
 ```
 
-Si no renderiza en tu visor actual, revisa que el preview Markdown soporte Mermaid. El contenido del flujo es el mismo que el documento resumen [../auth/AUTHZ_MODEL_V2.md](../auth/AUTHZ_MODEL_V2.md).
+Si no renderiza en tu visor actual, revisa que el preview Markdown soporte Mermaid. El contenido del flujo es el mismo que el documento resumen [AUTHZ_MODEL_V2.md](AUTHZ_MODEL_V2.md).

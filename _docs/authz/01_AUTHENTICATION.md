@@ -1,28 +1,13 @@
-# 01 - Authentication (Quien eres)
-Ultima actualizacion: 2026-06-23
+# 01_AUTHENTICATION (Moved)
+Ultima actualizacion: 2026-06-24
+Estado: moved
+Ambito: actual
 
-Authentication solo responde identidad.
-No decide permisos de recursos.
+Este archivo se mantiene por compatibilidad de enlaces.
 
-## Entradas actuales
+Nueva ubicacion:
+- [01_IDENTITY_PREREQUISITE.md](01_IDENTITY_PREREQUISITE.md)
 
-### Usuario
-- Endpoint: POST /api/auth/login
-- Valida username/email + password
-- Resultado: token tipo user
-
-### App
-- Endpoint: POST /api/auth/token
-- Valida apiKey activa
-- Resultado: token tipo app
-
-## Salida esperada
-
-- Identidad validada
-- Token firmado
-- Contexto minimo para etapas siguientes (appId, type, userId/app)
-
-## Lo que NO debe decidir esta capa
-
-- Si puede entrar a app especifica (eso es capa de acceso de app)
-- Si puede leer/escribir recursos (eso es authorization granular)
+Motivo del cambio:
+- Reducir confusion con la carpeta [../auth](../auth), que documenta autenticacion como dominio principal.
+- Mantener en [../authz](../authz) solo el prerequisito de identidad dentro del flujo de autorizacion por capas.

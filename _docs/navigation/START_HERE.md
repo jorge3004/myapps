@@ -21,16 +21,18 @@ Referencia primaria de estado:
 ## Direccion (A donde vamos)
 
 1. Consolidar modelo de acceso por capas:
-   - authentication
+   - identity prerequisite (AuthN)
    - app access gate
-   - resource authorization
+   - resource authorization (AuthZ)
 2. Estandarizar permisos para user token y app token.
 3. Mantener observabilidad de runtime y reducir ruido en responses.
 4. Completar validacion funcional de endpoints pendientes.
 
 Referencia de diseño:
-- [AUTHZ_MODEL_V2.md](../auth/AUTHZ_MODEL_V2.md)
-- [authz/00_README.md](../authz/00_README.md)
+- [auth/README.md](../auth/README.md)
+- [authz/README.md](../authz/README.md)
+- [AUTHZ_MODEL_V2.md](../authz/AUTHZ_MODEL_V2.md)
+- [AUTH_AUTHZ_GLOSSARY.md](AUTH_AUTHZ_GLOSSARY.md)
 
 ## Siguiente inmediato (Now)
 
@@ -46,6 +48,7 @@ Referencia de diseño:
 Referencia operativa:
 - [ENDPOINTS_GUIDE.md](../testing/ENDPOINTS_GUIDE.md)
 - [USERS_TEST_README.md](../testing/USERS_TEST_README.md)
+- [AUTHZ_AUTOMATED_TESTS.md](../testing/AUTHZ_AUTOMATED_TESTS.md)
 
 ## Regla de lectura recomendada
 

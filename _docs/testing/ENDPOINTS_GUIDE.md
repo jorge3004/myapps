@@ -91,7 +91,7 @@ Tip de lectura rapida:
 | health/runtime | GET | `/api/runtime/status` | No | Estado runtime completo: contexto dinámico, política, decisiones y health check MySQL. | [RUNTIME_STATUS_ENDPOINT.md](../runtime/RUNTIME_STATUS_ENDPOINT.md), [next-steps.md](../navigation/next-steps.md) | ok |
 | auth | POST | `/api/auth/login` | No | Login de usuario, emite JWT. | [authentication-design.md](../auth/authentication-design.md) | pendiente |
 | auth | POST | `/api/auth/token` | No | Intercambia API key por token tipo app. | [authentication-design.md](../auth/authentication-design.md), [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md) | pendiente |
-| users | GET | `/api/users` | Bearer + scope | Lista usuarios (paginado). | [SCOPE_CONVENTION.md](../auth/SCOPE_CONVENTION.md) | pendiente |
+| users | GET | `/api/users` | Bearer + scope | Lista usuarios (paginado). | [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
 | users | POST | `/api/users` | Bearer + scope | Crea usuario y opcionalmente asigna apps/roles por app. | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md) | pendiente |
 | users | GET | `/api/users/by-email/:email` | No (actual) | Busca usuario por email. | - | pendiente |
 | users | GET | `/api/users/by-username/:username` | No (actual) | Busca usuario por username (pendiente validar handler real). | [backend/src/routes/userRoutes.ts](../../backend/src/routes/userRoutes.ts#L27) | pendiente |
@@ -99,11 +99,11 @@ Tip de lectura rapida:
 | users | GET | `/api/users/:userId/apps` | No (actual) | Lista apps permitidas del usuario. | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md) | pendiente |
 | users | POST | `/api/users/:userId/apps` | Bearer + scope | Asigna o actualiza acceso del usuario a una app (crea/actualiza en `user_apps`). `role` es opcional y por defecto queda `user`. | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md), [USERS_TEST_README.md](USERS_TEST_README.md) | pendiente |
 | users | DELETE | `/api/users/:userId/apps/:appId` | Bearer + scope | Quita acceso del usuario a una app (elimina en `user_apps`). | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md), [USERS_TEST_README.md](USERS_TEST_README.md) | pendiente |
-| users | GET | `/api/users/:userId/scopes` | Bearer | Devuelve scopes derivados, directos, revocados y efectivos. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../auth/SCOPE_CONVENTION.md) | pendiente |
-| users | POST | `/api/users/:userId/scopes` | Bearer | Agrega scope directo al usuario (no asigna acceso de app en `user_apps`). | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../auth/SCOPE_CONVENTION.md), [USERS_TEST_README.md](USERS_TEST_README.md) | pendiente |
-| users | DELETE | `/api/users/:userId/scopes` | Bearer | Quita scope directo del usuario. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../auth/SCOPE_CONVENTION.md) | pendiente |
-| users | POST | `/api/users/:userId/revoked-scopes` | Bearer | Revoca scope especifico sin cambiar rol. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../auth/SCOPE_CONVENTION.md) | pendiente |
-| users | DELETE | `/api/users/:userId/revoked-scopes` | Bearer | Restaura scope previamente revocado. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../auth/SCOPE_CONVENTION.md) | pendiente |
+| users | GET | `/api/users/:userId/scopes` | Bearer | Devuelve scopes derivados, directos, revocados y efectivos. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
+| users | POST | `/api/users/:userId/scopes` | Bearer | Agrega scope directo al usuario (no asigna acceso de app en `user_apps`). | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md), [USERS_TEST_README.md](USERS_TEST_README.md) | pendiente |
+| users | DELETE | `/api/users/:userId/scopes` | Bearer | Quita scope directo del usuario. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
+| users | POST | `/api/users/:userId/revoked-scopes` | Bearer | Revoca scope especifico sin cambiar rol. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
+| users | DELETE | `/api/users/:userId/revoked-scopes` | Bearer | Restaura scope previamente revocado. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
 | apps | GET | `/api/apps` | Bearer | Lista apps registradas con API keys. | [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md) | pendiente |
 | apps | POST | `/api/apps` | Bearer + admin | Registra una app nueva. | [backend-db-schema-inicial.md](../data/backend-db-schema-inicial.md) | pendiente |
 | apps | POST | `/api/apps/:appId/apikeys` | Bearer + admin | Crea API key para app. | [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md), [auditoria-y-rotacion-apikeys-2026-05-28.md](../history/auditoria-y-rotacion-apikeys-2026-05-28.md) | pendiente |
@@ -133,11 +133,13 @@ Tip de lectura rapida:
 
 - [START_HERE.md](../navigation/START_HERE.md) — Estado actual, direccion y siguiente inmediato
 - [DOCS_MAP.md](../navigation/DOCS_MAP.md) — Navegacion por objetivo para encontrar docs rapido
-- [AUTHZ_MODEL_V2.md](../auth/AUTHZ_MODEL_V2.md) — Modelo de autorización actualizado (acceso de app + permisos granulares)
-- [authz/00_README.md](../authz/00_README.md) — Version modular y gradual del modelo (authentication -> app access -> authorization)
+- [AUTH_AUTHZ_GLOSSARY.md](../navigation/AUTH_AUTHZ_GLOSSARY.md) — Terminologia canonica (AuthN vs AuthZ)
+- [AUTHZ_AUTOMATED_TESTS.md](AUTHZ_AUTOMATED_TESTS.md) — Tests automatizados actuales de auth/authz (sin impacto en MySQL)
+- [AUTHZ_MODEL_V2.md](../authz/AUTHZ_MODEL_V2.md) — Modelo de autorización actualizado (acceso de app + permisos granulares)
+- [authz/00_README.md](../authz/00_README.md) — Version modular y gradual del modelo (identity prerequisite -> app access -> authorization)
 - [RUNTIME_STATUS_ENDPOINT.md](../runtime/RUNTIME_STATUS_ENDPOINT.md) — Documentación detallada de `/api/runtime/status`
 - [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md)
-- [SCOPE_CONVENTION.md](../auth/SCOPE_CONVENTION.md)
+- [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md)
 - [authentication-design.md](../auth/authentication-design.md)
 - [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md)
 - [backend-db-schema-inicial.md](../data/backend-db-schema-inicial.md)

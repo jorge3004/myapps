@@ -1,3 +1,9 @@
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import { normalizeScopes } from '../services/authorizationService';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
+
 // Middleware para requerir un rol específico (ej: 'admin')
 export function requireRole(role: string) {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -46,12 +52,6 @@ export function verifyUserTokenStrict(req: Request, res: Response, next: NextFun
     }
 }
 
-
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
-
 export function verifyUserToken(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -60,11 +60,11 @@ export function verifyUserToken(req: Request, res: Response, next: NextFunction)
     const token = authHeader.replace('Bearer ', '').trim();
     try {
         const payload = jwt.verify(token, JWT_SECRET) as any;
-        (req as any).user = payload;
-        // Propagar scopes si existen en el JWT
-        if (payload && payload.scopes) {
-            (req as any).apiKey = { scopes: payload.scopes };
+        if (payload.type && payload.type !== 'user') {
+            return res.status(403).json({ error: 'Token is not a user token' });
         }
+        (req as any).user = payload;
+        (req as any).apiKey = { scopes: normalizeScopes(payload?.scopes) };
         next();
     } catch (err) {
         return res.status(401).json({ error: 'Invalid or expired token' });

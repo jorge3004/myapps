@@ -3,46 +3,7 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import * as userService from '../services/userService';
 import { User } from '../models/user';
-
-// Centralized role-to-scope mapping used by MySQL-backed auth
-export const ROLE_SCOPES: Record<string, string[]> = {
-    'admin': ['*'],
-    'user': ['read:users', 'read:catalogs'],
-    'editor': ['read:users', 'write:catalogs'],
-};
-
-export function deriveScopes(user: User, rolesPorApp: Record<string, string>, appIds: string[]): string[] {
-    const scopes = new Set<string>();
-    // 1. Scopes derivados de role por app
-    for (const appId of appIds) {
-        const role = rolesPorApp[appId];
-        if (role && ROLE_SCOPES[role]) {
-            for (const scope of ROLE_SCOPES[role]) {
-                if (scope === '*') {
-                    scopes.add('*');
-                } else {
-                    scopes.add(`${appId}:${scope}`);
-                }
-            }
-        }
-    }
-
-    // 2. Scopes directos en users.scopes
-    if (user.scopes && Array.isArray(user.scopes)) {
-        for (const s of user.scopes) {
-            scopes.add(s);
-        }
-    }
-
-    // 3. Revoked scopes explícitos
-    if (user.revokedScopes && Array.isArray(user.revokedScopes)) {
-        for (const revoked of user.revokedScopes) {
-            scopes.delete(revoked);
-        }
-    }
-
-    return Array.from(scopes);
-}
+import { buildUserAuthorizationContext, canAccessApp, resolveRoleForApp } from '../services/authorizationService';
 import bcrypt from 'bcrypt';
 
 const router = Router();
@@ -63,25 +24,19 @@ router.post('/login', async (req, res) => {
         }
 
         const appRoles = await userService.getUserAppRoles(user.id);
-        const allowedAppIds = appRoles.map((row) => row.appId);
-        const rolesPorApp = appRoles.reduce((acc: Record<string, string>, row) => {
-            acc[row.appId] = row.role;
-            return acc;
-        }, {});
-
-        const isGlobalAdmin = user.role === 'admin';
+        const authzContext = buildUserAuthorizationContext(user, appRoles);
 
         // Admin global puede entrar sin appId
-        if (isGlobalAdmin && !appId) {
+        if (authzContext.isGlobalAdmin && !appId) {
             const payload = {
                 type: 'user',
                 userId: user.id,
                 username: user.username,
                 appId: '*',
                 role: 'admin',
-                appIds: allowedAppIds,
-                rolesPorApp,
-                scopes: deriveScopes(user, rolesPorApp, allowedAppIds)
+                appIds: authzContext.allowedAppIds,
+                rolesPorApp: authzContext.rolesPorApp,
+                scopes: authzContext.effectiveScopes
             };
             const token = jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
             return res.json({ token });
@@ -91,21 +46,20 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: 'appId required for non-admin users' });
         }
 
-        const hasAccess = isGlobalAdmin || allowedAppIds.includes(appId);
-        if (!hasAccess) {
+        if (!canAccessApp(authzContext, appId)) {
             return res.status(403).json({ error: 'User does not have access to this app' });
         }
 
-        const role = isGlobalAdmin ? 'admin' : (rolesPorApp[appId] || 'user');
+        const role = resolveRoleForApp(authzContext, appId);
         const payload = {
             type: 'user',
             userId: user.id,
             username: user.username,
             appId,
             role,
-            appIds: allowedAppIds,
-            rolesPorApp,
-            scopes: deriveScopes(user, rolesPorApp, allowedAppIds)
+            appIds: authzContext.allowedAppIds,
+            rolesPorApp: authzContext.rolesPorApp,
+            scopes: authzContext.effectiveScopes
         };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
         res.json({ token });

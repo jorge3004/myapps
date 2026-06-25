@@ -1,4 +1,6 @@
 
+import { ROLE_SCOPES } from '../services/authorizationService';
+
 function getUserId(length = 16): string {
     return randomUUID().replace(/-/g, '').slice(0, length);
 }
@@ -17,7 +19,6 @@ export const addUserScope = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Scope must be in format <appId>:<action>:<resource>' });
         }
         // Validar que <action>:<resource> exista en ROLE_SCOPES
-        const { ROLE_SCOPES } = require('../routes/authRoutes');
         const validActions = new Set();
         (Object.values(ROLE_SCOPES) as string[][]).forEach((scopesArr) => scopesArr.forEach(s => validActions.add(s)));
         if (!validActions.has(`${parts[1]}:${parts[2]}`)) {
@@ -73,7 +74,6 @@ export const addUserRevokedScope = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Scope must be in format <appId>:<action>:<resource>' });
         }
         // Validar que <action>:<resource> exista en ROLE_SCOPES
-        const { ROLE_SCOPES } = require('../routes/authRoutes');
         const validActions = new Set();
         (Object.values(ROLE_SCOPES) as string[][]).forEach((scopesArr) => scopesArr.forEach(s => validActions.add(s)));
         if (!validActions.has(`${parts[1]}:${parts[2]}`)) {
@@ -106,8 +106,6 @@ export const removeUserRevokedScope = async (req: Request, res: Response) => {
         res.status(400).json({ error: (error as Error).message });
     }
 };
-import { ROLE_SCOPES, deriveScopes } from '../routes/authRoutes';
-
 /**
  * Endpoint to get user scopes, distinguishing:
  * - derivedScopes: from roles (ROLE_SCOPES)
