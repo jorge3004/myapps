@@ -592,31 +592,54 @@ Los tests son unitarios (no tocan MySQL).
 
 ## Tabla Rápida de Endpoints
 
-| Método | Endpoint | Auth | Scope | Descripción |
-|--------|----------|------|-------|-------------|
-| POST | `/api/auth/login` | No | - | Login usuario |
-| POST | `/api/auth/token` | No | - | Token de app (API key) |
-| GET | `/api/users` | Bearer | read:users | Listar usuarios |
-| POST | `/api/users` | Bearer | write:users | Crear usuario |
-| GET | `/api/users/by-email/:email` | No | - | Buscar por email |
-| GET | `/api/users/by-username/:username` | No | - | Buscar por username |
-| GET | `/api/users/:userId` | No | - | Obtener usuario |
-| GET | `/api/users/:userId/apps` | No | - | Apps del usuario |
-| POST | `/api/users/:userId/apps` | Bearer | write:users | Asignar a app |
-| DELETE | `/api/users/:userId/apps/:appId` | Bearer | write:users | Remover de app |
-| GET | `/api/users/:userId/scopes` | Bearer | - | Consultar scopes |
-| POST | `/api/users/:userId/scopes` | Bearer | - | Agregar scope directo |
-| DELETE | `/api/users/:userId/scopes` | Bearer | - | Remover scope directo |
-| POST | `/api/users/:userId/revoked-scopes` | Bearer | - | Revocar scope |
-| DELETE | `/api/users/:userId/revoked-scopes` | Bearer | - | Restaurar scope |
-| GET | `/api/apps` | Bearer | - | Listar apps |
-| POST | `/api/apps` | Bearer (admin) | - | Crear app |
-| POST | `/api/apps/:appId/apikeys` | Bearer (admin) | - | Crear API key |
-| POST | `/api/apps/:appId/apikeys/:apiKey/revoke` | Bearer (admin) | - | Revocar API key (por app) |
-| DELETE | `/api/apps/apikeys/:apiKey` | Bearer (admin) | - | Revocar API key (global) |
-| GET | `/api/audit-logs` | No | - | Logs de auditoría |
-| GET | `/api/health` | No | - | Health check |
-| GET | `/api/runtime/status` | No | - | Diagnostico de runtime |
+> **Nota:** Esta es una referencia visual rápida. Para la lista **completa y detallada** de los 24 endpoints organizados por categoría, ver [ENDPOINTS_GUIDE.md](ENDPOINTS_GUIDE.md).
+
+### Health & Runtime
+| Método | Endpoint | Auth | Descripción |
+|--------|----------|------|-------------|
+| GET | `/health` | No | Health check |
+| GET | `/runtime/status` | No | Diagnostico runtime |
+
+### Autenticación
+| Método | Endpoint | Auth | Descripción |
+|--------|----------|------|-------------|
+| POST | `/auth/login` | No | Login usuario → JWT |
+| POST | `/auth/token` | No | API key → token app |
+
+### Usuarios
+| Método | Endpoint | Auth | Descripción |
+|--------|----------|------|-------------|
+| GET | `/users` | Bearer | Listar usuarios |
+| POST | `/users` | Bearer | Crear usuario |
+| GET | `/users/by-email/:email` | No | Buscar por email |
+| GET | `/users/:userId` | No | Obtener por ID |
+| GET | `/users/:userId/apps` | No | Ver apps accesibles |
+| POST | `/users/:userId/apps` | Bearer | Asignar a app |
+| DELETE | `/users/:userId/apps/:appId` | Bearer | Remover de app |
+
+### Scopes & Permisos
+| Método | Endpoint | Auth | Descripción |
+|--------|----------|------|-------------|
+| GET | `/users/:userId/scopes` | Bearer | Consultar scopes |
+| POST | `/users/:userId/scopes` | Bearer | Agregar scope |
+| DELETE | `/users/:userId/scopes` | Bearer | Remover scope |
+| POST | `/users/:userId/revoked-scopes` | Bearer | Revocar scope |
+| DELETE | `/users/:userId/revoked-scopes` | Bearer | Restaurar scope |
+
+### Aplicaciones
+| Método | Endpoint | Auth | Descripción |
+|--------|----------|------|-------------|
+| GET | `/apps` | Bearer | Listar apps |
+| POST | `/apps` | Bearer (admin) | Crear app |
+| POST | `/apps/:appId/apikeys` | Bearer (admin) | Crear API key |
+| DELETE | `/apps/apikeys/:apiKey` | Bearer (admin) | Revocar API key |
+
+### Auditoría
+| Método | Endpoint | Auth | Descripción |
+|--------|----------|------|-------------|
+| GET | `/audit-logs` | No | Ver logs |
+
+**→ [Ver lista completa y detallada en ENDPOINTS_GUIDE.md](ENDPOINTS_GUIDE.md)**
 
 ---
 

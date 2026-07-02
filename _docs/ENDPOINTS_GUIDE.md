@@ -1,112 +1,155 @@
-# Guia de endpoints para pruebas en Insomnia
-Ultima actualizacion: 2026-06-18
-Estado: active
-Ambito: actual
-
-Historial de cambios:
-- Ver [IMPLEMENTATION_TIMELINE.md](../navigation/IMPLEMENTATION_TIMELINE.md)
-
-Servidor activo:
-- Uno solo: [backend/src/index.ts](../../backend/src/index.ts)
-- Base URL: `http://localhost:4000/api`
-
-Nota de alcance:
-- Esta guia es el inventario rapido de endpoints.
-- Si un endpoint tiene documentacion contextual adicional, se marca en la columna `Contexto`.
-
+# Guía de Endpoints
+**Última actualización:** 2026-07-02  
+**Estado:** active  
+**Ámbito:** Referencia completa de endpoints API
 
 ---
 
-## Headers runtime opcionales
+## Información General
+
+**Servidor activo:** [backend/src/index.ts](../../backend/src/index.ts)  
+**Base URL:** `http://localhost:4000/api`  
+**Nota:** Todos los endpoints se prefijan con `/api`. En las tablas siguientes se omite por brevedad.
+
+---
+
+## Headers Runtime (Opcionales)
 
 | Header | Valores |
-|---|---|
-| x-runtime-env | dev, prod |
-| x-data-source | mysql, memory |
+|--------|---------|
+| `x-runtime-env` | `dev`, `prod` |
+| `x-data-source` | `mysql`, `memory` |
 
-Headers de respuesta de trazabilidad:
-- `x-runtime-env-requested`
-- `x-runtime-env-served`
-- `x-data-source-requested`
-- `x-data-source-served`
-- `x-data-source-fallback`
-- `x-data-source-mysql-available`
+**Headers de respuesta de trazabilidad:**
+- `x-runtime-env-requested`, `x-runtime-env-served`
+- `x-data-source-requested`, `x-data-source-served`
+- `x-data-source-fallback`, `x-data-source-mysql-available`
 
 ---
 
-## Tabla maestra de endpoints
+## Tabla de Endpoints por Categoría
 
-Leyenda de `Estado prueba`:
-- `pendiente`: aun no probado en Insomnia
-- `ok`: probado y funcionando como esperado
-- `fallo`: probado, pero devolvio error inesperado
+### Health & Runtime
 
-## Vista rapida por categoria  (/api...)
+| Método | Endpoint | Autenticación | Descripción |
+|--------|----------|---------------|-------------|
+| GET | `/health` | No | Health check general del servidor |
+| GET | `/runtime/status` | No | Diagnostico runtime: datasource, MySQL health, configuración activa |
 
-### health/runtime
-- GET /health
-- GET /runtime/status
+---
 
-### auth
-- POST /auth/login
-- POST /auth/token
+### Autenticación
 
-### users
-- GET /users
-- POST /users
-- GET  /users/by-email/:email
-- GET /users/by-username/:username
-- GET /users/:userId
-- GET /users/:userId/apps
-- POST /users/:userId/apps
-- DELETE /users/:userId/apps/:appId
-- GET /users/:userId/scopes
-- POST /users/:userId/scopes
-- DELETE /users/:userId/scopes
-- POST /users/:userId/revoked-scopes
-- DELETE /users/:userId/revoked-scopes
+| Método | Endpoint | Autenticación | Descripción |
+|--------|----------|---------------|-------------|
+| POST | `/auth/login` | No | Login usuario: retorna JWT |
+| POST | `/auth/token` | No | Intercambia API key por token de app |
 
-### apps
-- GET /apps
-- POST /apps
-- POST /apps/:appId/apikeys
-- POST /apps/:appId/apikeys/:apiKey/revoke
-- DELETE /apps/apikeys/:apiKey
+---
 
-### audit-logs
-- GET /audit-logs
+### Gestión de Usuarios
 
-### catalog
-- /catalog/* (sin endpoints implementados actualmente)
+| Método | Endpoint | Autenticación | Descripción |
+|--------|----------|---------------|-------------|
+| GET | `/users` | Bearer (read:users) | Lista usuarios con paginación (?limit=20&offset=0) |
+| POST | `/users` | Bearer (write:users) | Crear usuario nuevo |
+| GET | `/users/by-email/:email` | No | Buscar usuario por email |
+| GET | `/users/by-username/:username` | No | Buscar usuario por username |
+| GET | `/users/:userId` | No | Obtener usuario por ID |
+| GET | `/users/:userId/apps` | No | Listar apps a las que tiene acceso |
+| POST | `/users/:userId/apps` | Bearer (write:users) | Asignar usuario a app con rol |
+| DELETE | `/users/:userId/apps/:appId` | Bearer (write:users) | Remover usuario de app |
 
+---
 
-| Grupo | Metodo | Endpoint | Auth | Descripcion breve | Contexto | Estado prueba |
-|---|---|---|---|---|---|---|
-| health/runtime | GET | `/health` | No | Health check general del servidor. | - | ok |
-| health/runtime | GET | `/api/health/data-source` | No | ~~Eliminado — contenido absorbido por `/api/runtime/status`~~ | - | - |
-| health/runtime | GET | `/api/runtime/status` | No | Estado runtime completo: contexto dinámico, política, decisiones y health check MySQL. | [RUNTIME_STATUS_ENDPOINT.md](../runtime/RUNTIME_STATUS_ENDPOINT.md), [next-steps.md](../navigation/next-steps.md) | ok |
-| auth | POST | `/api/auth/login` | No | Login de usuario, emite JWT. | [authentication-design.md](../auth/authentication-design.md) | pendiente |
-| auth | POST | `/api/auth/token` | No | Intercambia API key por token tipo app. | [authentication-design.md](../auth/authentication-design.md), [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md) | pendiente |
-| users | GET | `/users` | Bearer + scope | Lista usuarios (paginado). | [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
-| users | POST | `/api/users` | Bearer + scope | Crea usuario y opcionalmente asigna apps/roles por app. | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md) | pendiente |
-| users | GET | `/users/by-email/:email` | No (actual) | Busca usuario por email. | - | pendiente |
-| users | GET | `/users/by-username/:username` | No (actual) | Busca usuario por username (pendiente validar handler real). | [backend/src/routes/userRoutes.ts](../../backend/src/routes/userRoutes.ts#L27) | pendiente |
-| users | GET | `/api/users/:userId` | No (actual) | Obtiene usuario por ID. | - | pendiente |
-| users | GET | `/api/users/:userId/apps` | No (actual) | Lista apps permitidas del usuario. | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md) | pendiente |
-| users | POST | `/api/users/:userId/apps` | Bearer + scope | Asigna o actualiza acceso del usuario a una app (crea/actualiza en `user_apps`). `role` es opcional y por defecto queda `user`. | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md), [USERS_TEST_README.md](USERS_TEST_README.md) | pendiente |
-| users | DELETE | `/api/users/:userId/apps/:appId` | Bearer + scope | Quita acceso del usuario a una app (elimina en `user_apps`). | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md), [USERS_TEST_README.md](USERS_TEST_README.md) | pendiente |
-| users | GET | `/api/users/:userId/scopes` | Bearer | Devuelve scopes derivados, directos, revocados y efectivos. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
-| users | POST | `/api/users/:userId/scopes` | Bearer | Agrega scope directo al usuario (no asigna acceso de app en `user_apps`). | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md), [USERS_TEST_README.md](USERS_TEST_README.md) | pendiente |
-| users | DELETE | `/api/users/:userId/scopes` | Bearer | Quita scope directo del usuario. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
-| users | POST | `/api/users/:userId/revoked-scopes` | Bearer | Revoca scope especifico sin cambiar rol. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
-| users | DELETE | `/api/users/:userId/revoked-scopes` | Bearer | Restaura scope previamente revocado. | [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md), [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
-| apps | GET | `/api/apps` | Bearer | Lista apps registradas con API keys. | [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md) | pendiente |
-| apps | POST | `/api/apps` | Bearer + admin | Registra una app nueva. | [backend-db-schema-inicial.md](../data/backend-db-schema-inicial.md) | pendiente |
-| apps | POST | `/api/apps/:appId/apikeys` | Bearer + admin | Crea API key para app. | [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md), [auditoria-y-rotacion-apikeys-2026-05-28.md](../history/auditoria-y-rotacion-apikeys-2026-05-28.md) | pendiente |
-| apps | POST | `/api/apps/:appId/apikeys/:apiKey/revoke` | Bearer + admin | Revoca API key en app especifica. | [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md) | pendiente |
-| apps | DELETE | `/api/apps/apikeys/:apiKey` | Bearer + admin | Revocacion global de API key. | [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md) | pendiente |
-| audit-logs | GET | `/api/audit-logs` | No (actual) | Devuelve eventos de auditoria en memoria. | [auditoria-y-rotacion-apikeys-2026-05-28.md](../history/auditoria-y-rotacion-apikeys-2026-05-28.md) | pendiente |
-| catalog | - | `/api/catalog/*` | - | Actualmente sin endpoints implementados en el backend activo. | [backend/src/routes/catalogRoutes.ts](../../backend/src/routes/catalogRoutes.ts) | pendiente |
+### Gestión de Scopes
+
+| Método | Endpoint | Autenticación | Descripción |
+|--------|----------|---------------|-------------|
+| GET | `/users/:userId/scopes` | Bearer | Consultar scopes derivados, directos, revocados y efectivos |
+| POST | `/users/:userId/scopes` | Bearer | Agregar scope directo a usuario (formato: `appId:action:resource`) |
+| DELETE | `/users/:userId/scopes` | Bearer | Remover scope directo de usuario |
+| POST | `/users/:userId/revoked-scopes` | Bearer | Revocar scope específico (explicit deny) |
+| DELETE | `/users/:userId/revoked-scopes` | Bearer | Restaurar scope previamente revocado |
+
+---
+
+### Gestión de Aplicaciones
+
+| Método | Endpoint | Autenticación | Descripción |
+|--------|----------|---------------|-------------|
+| GET | `/apps` | Bearer | Listar todas las aplicaciones |
+| POST | `/apps` | Bearer (admin) | Crear aplicación nueva |
+| POST | `/apps/:appId/apikeys` | Bearer (admin) | Crear API key para aplicación |
+| POST | `/apps/:appId/apikeys/:apiKey/revoke` | Bearer (admin) | Revocar API key en app específica |
+| DELETE | `/apps/apikeys/:apiKey` | Bearer (admin) | Revocar API key globalmente (todas las apps) |
+
+---
+
+### Auditoría
+
+| Método | Endpoint | Autenticación | Descripción |
+|--------|----------|---------------|-------------|
+| GET | `/audit-logs` | No | Obtener eventos de auditoría |
+
+---
+
+### Catálogo
+
+| Método | Endpoint | Autenticación | Descripción |
+|--------|----------|---------------|-------------|
+| - | `/catalog/*` | - | Sin endpoints implementados actualmente en backend activo |
+
+---
+
+## Leyenda de Autenticación
+
+| Valor | Significado |
+|-------|------------|
+| `No` | Endpoint público, sin autenticación requerida |
+| `Bearer` | Requiere token JWT en header `Authorization: Bearer <token>` |
+| `Bearer (scope)` | Requiere token Bearer + scope específico |
+| `Bearer (admin)` | Requiere token Bearer + rol admin |
+
+---
+
+## Guía Rápida por Caso de Uso
+
+### Crear un usuario e inmediatamente darle acceso a una app
+
+1. **Login como admin:** `POST /auth/login` (usuario: `jorge`, password: `jorge123`)
+2. **Crear usuario:** `POST /users` (con email, username, password)
+3. **Asignar a app:** `POST /users/:userId/apps` (appId: `app1`, role: `editor`)
+4. **Verificar:** `GET /users/:userId/apps`
+
+### Gestionar permisos granulares
+
+1. **Consultar scopes actuales:** `GET /users/:userId/scopes`
+2. **Agregar permiso específico:** `POST /users/:userId/scopes` (scope: `app1:write:catalogs`)
+3. **Remover permiso:** `DELETE /users/:userId/scopes` (scope: `app1:write:catalogs`)
+4. **Revocar sin remover:** `POST /users/:userId/revoked-scopes` (para deny explícito)
+
+### Generar token desde API key
+
+1. **Obtener API key:** `GET /apps` (en la respuesta, buscar `apiKeys`)
+2. **Intercambiar:** `POST /auth/token` (apiKey en body o header `x-api-key`)
+3. **Usar token:** Incluir en header `Authorization: Bearer <token>`
+
+---
+
+## Diagnóstico del Sistema
+
+Usa `/api/runtime/status` para:
+- Verificar qué datasource está activo (MySQL vs Memory)
+- Revisar latencia de MySQL
+- Validar que los headers de runtime se aplican correctamente
+
+Ejemplo:
+```bash
+curl -H "x-runtime-env: dev" \
+     -H "x-data-source: mysql" \
+     http://localhost:4000/api/runtime/status
+```
 
 
 
