@@ -16,12 +16,8 @@ const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(runtimeContextMiddleware);
+
 app.use('/api/users', userRoutes);
-
-// Registrar rutas bajo /api/auth
-
-
-// Montar rutas de apps y catálogo
 app.use('/api/apps', appRoutes);
 app.use('/api/catalog', catalogRoutes);
 app.use('/api/auth', authRoutes);

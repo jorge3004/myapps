@@ -14,8 +14,6 @@ Nota de alcance:
 - Esta guia es el inventario rapido de endpoints.
 - Si un endpoint tiene documentacion contextual adicional, se marca en la columna `Contexto`.
 
-Pendiente de validacion funcional:
-- `GET /api/users/by-username/:username` (ver [backend/src/routes/userRoutes.ts](../../backend/src/routes/userRoutes.ts#L27)).
 
 ---
 
@@ -43,58 +41,56 @@ Leyenda de `Estado prueba`:
 - `ok`: probado y funcionando como esperado
 - `fallo`: probado, pero devolvio error inesperado
 
-## Vista rapida por categoria
+## Vista rapida por categoria  (/api...)
 
 ### health/runtime
-- GET /api/health
-- GET /api/runtime/status
+- GET /health
+- GET /runtime/status
 
 ### auth
-- POST /api/auth/login
-- POST /api/auth/token
+- POST /auth/login
+- POST /auth/token
 
 ### users
-- GET /api/users
-- POST /api/users
-- GET /api/users/by-email/:email
-- GET /api/users/by-username/:username
-- GET /api/users/:userId
-- GET /api/users/:userId/apps
-- POST /api/users/:userId/apps
-- DELETE /api/users/:userId/apps/:appId
-- GET /api/users/:userId/scopes
-- POST /api/users/:userId/scopes
-- DELETE /api/users/:userId/scopes
-- POST /api/users/:userId/revoked-scopes
-- DELETE /api/users/:userId/revoked-scopes
+- GET /users
+- POST /users
+- GET  /users/by-email/:email
+- GET /users/by-username/:username
+- GET /users/:userId
+- GET /users/:userId/apps
+- POST /users/:userId/apps
+- DELETE /users/:userId/apps/:appId
+- GET /users/:userId/scopes
+- POST /users/:userId/scopes
+- DELETE /users/:userId/scopes
+- POST /users/:userId/revoked-scopes
+- DELETE /users/:userId/revoked-scopes
 
 ### apps
-- GET /api/apps
-- POST /api/apps
-- POST /api/apps/:appId/apikeys
-- POST /api/apps/:appId/apikeys/:apiKey/revoke
-- DELETE /api/apps/apikeys/:apiKey
+- GET /apps
+- POST /apps
+- POST /apps/:appId/apikeys
+- POST /apps/:appId/apikeys/:apiKey/revoke
+- DELETE /apps/apikeys/:apiKey
 
 ### audit-logs
-- GET /api/audit-logs
+- GET /audit-logs
 
 ### catalog
-- /api/catalog/* (sin endpoints implementados actualmente)
+- /catalog/* (sin endpoints implementados actualmente)
 
-Tip de lectura rapida:
-- Si quieres ver todos los endpoints de corrido, recorre solo la columna `Endpoint`.
 
 | Grupo | Metodo | Endpoint | Auth | Descripcion breve | Contexto | Estado prueba |
 |---|---|---|---|---|---|---|
-| health/runtime | GET | `/api/health` | No | Health check general del servidor. | - | ok |
+| health/runtime | GET | `/health` | No | Health check general del servidor. | - | ok |
 | health/runtime | GET | `/api/health/data-source` | No | ~~Eliminado — contenido absorbido por `/api/runtime/status`~~ | - | - |
 | health/runtime | GET | `/api/runtime/status` | No | Estado runtime completo: contexto dinámico, política, decisiones y health check MySQL. | [RUNTIME_STATUS_ENDPOINT.md](../runtime/RUNTIME_STATUS_ENDPOINT.md), [next-steps.md](../navigation/next-steps.md) | ok |
 | auth | POST | `/api/auth/login` | No | Login de usuario, emite JWT. | [authentication-design.md](../auth/authentication-design.md) | pendiente |
 | auth | POST | `/api/auth/token` | No | Intercambia API key por token tipo app. | [authentication-design.md](../auth/authentication-design.md), [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md) | pendiente |
-| users | GET | `/api/users` | Bearer + scope | Lista usuarios (paginado). | [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
+| users | GET | `/users` | Bearer + scope | Lista usuarios (paginado). | [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md) | pendiente |
 | users | POST | `/api/users` | Bearer + scope | Crea usuario y opcionalmente asigna apps/roles por app. | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md) | pendiente |
-| users | GET | `/api/users/by-email/:email` | No (actual) | Busca usuario por email. | - | pendiente |
-| users | GET | `/api/users/by-username/:username` | No (actual) | Busca usuario por username (pendiente validar handler real). | [backend/src/routes/userRoutes.ts](../../backend/src/routes/userRoutes.ts#L27) | pendiente |
+| users | GET | `/users/by-email/:email` | No (actual) | Busca usuario por email. | - | pendiente |
+| users | GET | `/users/by-username/:username` | No (actual) | Busca usuario por username (pendiente validar handler real). | [backend/src/routes/userRoutes.ts](../../backend/src/routes/userRoutes.ts#L27) | pendiente |
 | users | GET | `/api/users/:userId` | No (actual) | Obtiene usuario por ID. | - | pendiente |
 | users | GET | `/api/users/:userId/apps` | No (actual) | Lista apps permitidas del usuario. | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md) | pendiente |
 | users | POST | `/api/users/:userId/apps` | Bearer + scope | Asigna o actualiza acceso del usuario a una app (crea/actualiza en `user_apps`). `role` es opcional y por defecto queda `user`. | [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md), [USERS_TEST_README.md](USERS_TEST_README.md) | pendiente |
@@ -112,36 +108,6 @@ Tip de lectura rapida:
 | audit-logs | GET | `/api/audit-logs` | No (actual) | Devuelve eventos de auditoria en memoria. | [auditoria-y-rotacion-apikeys-2026-05-28.md](../history/auditoria-y-rotacion-apikeys-2026-05-28.md) | pendiente |
 | catalog | - | `/api/catalog/*` | - | Actualmente sin endpoints implementados en el backend activo. | [backend/src/routes/catalogRoutes.ts](../../backend/src/routes/catalogRoutes.ts) | pendiente |
 
----
 
-## Usuarios y datos de prueba rapidos
 
-| Usuario | Password | Rol | appId requerido |
-|---|---|---|---|
-| jorge | jorge123 | admin | No |
-| editor | editor123 | editor | Si (`app1`) |
-| user | user123 | user | Si (`app1`) |
 
-| App ID | Nombre |
-|---|---|
-| app1 | Catalogos |
-| app2 | Notificaciones |
-
----
-
-## Referencias generales
-
-- [START_HERE.md](../navigation/START_HERE.md) — Estado actual, direccion y siguiente inmediato
-- [DOCS_MAP.md](../navigation/DOCS_MAP.md) — Navegacion por objetivo para encontrar docs rapido
-- [AUTH_AUTHZ_GLOSSARY.md](../navigation/AUTH_AUTHZ_GLOSSARY.md) — Terminologia canonica (AuthN vs AuthZ)
-- [AUTHZ_AUTOMATED_TESTS.md](AUTHZ_AUTOMATED_TESTS.md) — Tests automatizados actuales de auth/authz (sin impacto en MySQL)
-- [AUTHZ_MODEL_V2.md](../authz/AUTHZ_MODEL_V2.md) — Modelo de autorización actualizado (acceso de app + permisos granulares)
-- [authz/00_README.md](../authz/00_README.md) — Version modular y gradual del modelo (identity prerequisite -> app access -> authorization)
-- [RUNTIME_STATUS_ENDPOINT.md](../runtime/RUNTIME_STATUS_ENDPOINT.md) — Documentación detallada de `/api/runtime/status`
-- [APIKEYS_ENDPOINTS.md](../auth/APIKEYS_ENDPOINTS.md)
-- [SCOPE_CONVENTION.md](../authz/SCOPE_CONVENTION.md)
-- [authentication-design.md](../auth/authentication-design.md)
-- [scopes-vs-roles-2026-05-28.md](../history/scopes-vs-roles-2026-05-28.md)
-- [backend-db-schema-inicial.md](../data/backend-db-schema-inicial.md)
-- [backend-db-relacion-usuarios-apps.md](../data/backend-db-relacion-usuarios-apps.md)
-- [next-steps.md](../navigation/next-steps.md)

@@ -15,7 +15,3 @@ Ultima actualizacion: 2026-06-24
 - [testing/](testing/) — guias de prueba funcional
 - [history/](history/) — contexto historico y decisiones previas
 - [authz/](authz/) — version modular por capas (auth -> app access -> authorization)
-
-## Compatibilidad de enlaces
-
-Se conservaron archivos puente en rutas antiguas para evitar enlaces rotos durante la transición.
