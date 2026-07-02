@@ -150,7 +150,3 @@ curl -H "x-runtime-env: dev" \
      -H "x-data-source: mysql" \
      http://localhost:4000/api/runtime/status
 ```
-
-
-
-
