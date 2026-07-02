@@ -1,19 +1,19 @@
-# Timeline de Implementacion
-Ultima actualizacion: 2026-06-23
+# Timeline de Implementación
+**Última actualización:** 2026-07-02
 
 ## Objetivo
-Este archivo es la fuente central de historial tecnico para saber que cambio, cuando cambio y cual es el estado actual.
+Este archivo es la fuente central de historial técnico para saber qué cambió, cuándo cambió y cuál es el estado actual.
 
 ## Convenciones
 - Estado de entrada:
-  - active: vigente en el sistema actual
-  - superseded: reemplazado por una implementacion mas nueva
-  - deprecated: legado, no recomendado para uso actual
+  - `active`: vigente en el sistema actual
+  - `superseded`: reemplazado por una implementación más nueva
+  - `deprecated`: legado, no recomendado para uso actual
 - Cada hito debe incluir:
   - fecha
   - resumen corto
   - impacto
-  - referencias a archivos o docs
+  - referencias a archivos o documentos
 
 ---
 
@@ -44,6 +44,38 @@ Este archivo es la fuente central de historial tecnico para saber que cambio, cu
 ---
 
 ## Hitos
+
+### 2026-07-02
+- Estado: active
+- Resumen: Limpieza y reorganización integral de DOCUMENTATION.md
+- Acción: Consolidación de documentación dispersa en archivo único actualizado
+- Impacto:
+  - **Reducción:** 1371 líneas → 673 líneas (49% reducción, sin pérdida de información valiosa)
+  - **Claridad:** Reorganización en estructura jerárquica clara (11 secciones vs mezcla anterior)
+  - **Actualización:** Validación contra código real - todos los endpoints verificados
+  - **Remoción:** Referencia a documentos obsoletos (IMPLEMENTATION_TIMELINE.md, authentication-design.md, etc.)
+  - **Eliminar:** Información del legacy (apps/catalog/backend Node.js) marcado como fase-out
+  - **Consolidar:** Explicaciones redundantes de roles/scopes/autorización (4 secciones → 1 comprensiva)
+- Cambios específicos:
+  - Agregado: Resumen Ejecutivo (contexto rápido)
+  - Agregado: Tabla Rápida de Endpoints (referencia visual)
+  - Agregado: Troubleshooting/FAQ (soluciones comunes)
+  - Agregado: Tabla de Contenidos con navegación
+  - Eliminado: Secciones "Separación futura de Catalog" (superseded)
+  - Eliminado: Ejemplos y documentación del backend Node.js legacy
+  - Eliminado: Referencias a sub-documentos (modularización.md, architecture-map-*.md, etc.)
+  - Eliminado: Frases de incertidumbre ("Pudo haber cambiado, esto se tomó de...")
+  - Reorganizado: Auth/AuthZ en una sola sección coherente (3 capas)
+  - Reorganizado: Roles, scopes y permisos en sección dedicada
+- Validación:
+  - 24 endpoints verificados contra código (backend/src/routes/*.ts)
+  - ROLE_SCOPES, usuarios de prueba, middleware validados
+  - JWT payload, datasource, configuración actualizada
+  - Matriz de autorización completa incluida
+- Referencias:
+  - [DOCUMENTATION.md](DOCUMENTATION.md) - versión limpia
+  - [backend/src/routes/](../../backend/src/routes/) - fuente de verdad de endpoints
+  - [backend/src/services/authorizationService.ts](../../backend/src/services/authorizationService.ts) - ROLE_SCOPES
 
 ### 2026-06-24
 - Estado: active
