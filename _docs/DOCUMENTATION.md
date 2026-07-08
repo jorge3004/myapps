@@ -590,6 +590,32 @@ Los tests son unitarios (no tocan MySQL).
 
 ---
 
+## Gestión de Variables de Entorno y Secretos
+
+### Ubicación del archivo local
+- El backend principal carga variables desde `myapps/backend/.env`.
+- Ese archivo está ignorado por git desde el `.gitignore` raíz, por lo que no debe commitearse.
+
+### Qué sí va al repositorio
+- `backend/sample.env` debe contener todas las claves requeridas, pero solo con valores de ejemplo o placeholders.
+- `npm run check-env` dentro de `backend/` permite verificar que tu `.env` local no tenga claves faltantes respecto a `sample.env`.
+
+### Qué no va al repositorio
+- No guardar credenciales reales en `README`, `_docs/`, commits, issues ni pull requests.
+- Aunque hoy sean credenciales de prueba, tratarlas como secret evita que más adelante se reutilicen o queden expuestas por costumbre.
+
+### Dónde guardar las credenciales reales
+- Usar un password manager compartido del equipo, un vault, o al menos una nota segura fuera de GitHub.
+- Si el equipo no tiene gestor de secretos todavía, un paso mínimo aceptable es mantener un documento privado fuera del repo con el valor actual de cada secreto y quién lo administra.
+
+### Flujo recomendado al clonar en otra laptop
+1. Copiar `backend/sample.env` a `backend/.env`.
+2. Completar los valores reales desde la fuente segura del equipo.
+3. Ejecutar `npm run check-env` en `backend/`.
+4. Levantar el backend con `npm run dev`.
+
+---
+
 ## Tabla Rápida de Endpoints
 
 > **Nota:** Esta es una referencia visual rápida. Para la lista **completa y detallada** de los 24 endpoints organizados por categoría, ver [ENDPOINTS_GUIDE.md](ENDPOINTS_GUIDE.md).
