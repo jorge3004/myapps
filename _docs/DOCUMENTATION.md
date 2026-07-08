@@ -489,22 +489,43 @@ x-data-source: mysql | memory
     "servedDataSource": "mysql",
     "fallbackApplied": false,
     "mysqlAvailable": true,
-    "operation": "read"
+    "operation": "read",
+    "reason": null
+  },
+  "runtimeContext": {
+    "dynamic": true,
+    "note": null
+  },
+  "defaults": {
+    "environment": "dev",
+    "dataSource": "mysql"
+  },
+  "available": {
+    "environments": ["dev", "prod"],
+    "dataSources": ["mysql", "memory"]
+  },
+  "policy": {
+    "fallbackReadToMemory": true,
+    "readSemanticPostRoutes": ["/api/auth/login", "/api/auth/token"]
   },
   "mysqlHealthCache": {
     "cachedValue": true,
-    "timeSinceLastCheck": "1.8s",
-    "remaining": "13.2s",
-    "ttl": "15.0s",
-    "dbLatency": "836ms"
+    "timeSinceLastCheck": "2.1s",
+    "remaining": "8.9s",
+    "ttl": "11.0s",
+    "timeout": "3.6s",
+    "dbLatency": "1.2s",
+    "lastCheckTimedOut": false
   }
 }
 ```
 
 **Interpretación:**
 - Si `servedDataSource ≠ requestedDataSource` → fallback a memoria (solo en lecturas)
-- Si `dbLatency > 3600ms` → considerar ajustar `MYSQL_HEALTH_TIMEOUT_MS`
-- Nota: Los valores de MYSQL_HEALTH_TTL_MS y MYSQL_HEALTH_TIMEOUT_MS del .env difieren a los valores default definidos en config.ts intencionalmente para saber si los valores se están tomando del .env o simplemente no se pudo leer el .env y se activaron los valores defauld.
+- Si `runtimeContext.dynamic = false`, el middleware de runtime no está activo para esa petición y `mysqlAvailable` se obtiene por demanda
+- `reason` aclara por qué se tomó la decisión de runtime; `null` significa que no hubo una razón especial
+- Si `dbLatency` se acerca o supera `MYSQL_HEALTH_TIMEOUT_MS`, conviene revisar el estado de MySQL o subir el timeout
+- Los defaults actuales en `config.ts` son `MYSQL_HEALTH_TTL_MS=10000` y `MYSQL_HEALTH_TIMEOUT_MS=3500`; si ves otros valores en la respuesta, vienen de tu `.env`
 
 ### Variables de Entorno
 
