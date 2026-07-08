@@ -43,6 +43,6 @@ export const runtimeConfig: RuntimeConfig = {
     allowedDataSources,
     readSemanticPostRoutes,
     fallbackReadToMemory: (process.env.FALLBACK_READ_TO_MEMORY || 'true').toLowerCase() === 'true',
-    mysqlHealthTtlMs: Number(process.env.MYSQL_HEALTH_TTL_MS || 5000),
-    mysqlHealthTimeoutMs: Number(process.env.MYSQL_HEALTH_TIMEOUT_MS || 350)
+    mysqlHealthTtlMs: Number(process.env.MYSQL_HEALTH_TTL_MS || 10000),
+    mysqlHealthTimeoutMs: Number(process.env.MYSQL_HEALTH_TIMEOUT_MS || 3500)
 };

@@ -503,7 +503,8 @@ x-data-source: mysql | memory
 
 **Interpretación:**
 - Si `servedDataSource ≠ requestedDataSource` → fallback a memoria (solo en lecturas)
-- Si `dbLatency > 3000ms` → considerar ajustar `MYSQL_HEALTH_TIMEOUT_MS`
+- Si `dbLatency > 3600ms` → considerar ajustar `MYSQL_HEALTH_TIMEOUT_MS`
+- Nota: Los valores de MYSQL_HEALTH_TTL_MS y MYSQL_HEALTH_TIMEOUT_MS del .env difieren a los valores default definidos en config.ts intencionalmente para saber si los valores se están tomando del .env o simplemente no se pudo leer el .env y se activaron los valores defauld.
 
 ### Variables de Entorno
 
@@ -516,8 +517,8 @@ ALLOWED_RUNTIME_ENVS=dev,prod
 DATA_SOURCE=mysql
 ALLOWED_DATA_SOURCES=mysql,memory
 FALLBACK_READ_TO_MEMORY=true
-MYSQL_HEALTH_TTL_MS=15000
-MYSQL_HEALTH_TIMEOUT_MS=3000
+MYSQL_HEALTH_TTL_MS=11000
+MYSQL_HEALTH_TIMEOUT_MS=3600
 
 # Database
 DB_HOST=localhost
