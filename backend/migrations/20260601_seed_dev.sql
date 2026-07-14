@@ -29,19 +29,19 @@ ON DUPLICATE KEY UPDATE
 -- 2) USERS
 INSERT INTO users (id, username, email, password_hash, role, scopes, revoked_scopes) VALUES
   (
-    '1', 'jorge', 'jorge',
+    'f1a2b3c4d5e6f701', 'jorge', 'jorge',
     '$2b$10$2G0kHBfFZn9b12KScl2O6uVgoa6e7nEfmjKeNW20mX93STr141kpC',
     -- jorge123 → bcrypt cost 10
     'admin', JSON_ARRAY('*'), JSON_ARRAY()
   ),
   (
-    '2', 'editor', 'editor@example.com',
+    'f1a2b3c4d5e6f702', 'editor', 'editor@example.com',
     '$2b$10$SapQr9.kA5nF1uahd72iReYx8wEt918JfqfPXD1gnrASZrc/0csM.',
     -- editor123 → bcrypt cost 10
     'editor', JSON_ARRAY(), JSON_ARRAY()
   ),
   (
-    '3', 'user', 'user@example.com',
+    'f1a2b3c4d5e6f703', 'user', 'user@example.com',
     '$2b$10$bm/A51eFWOLsHkxEuXPyR.TufvgWKHa9DRo7WfoxVpZEOrITZ/fJ6',
     -- user123 → bcrypt cost 10
     'user', JSON_ARRAY(), JSON_ARRAY()
@@ -59,10 +59,10 @@ ON DUPLICATE KEY UPDATE
 --    El rol aquí determina los scopes derivados en authRoutes.ts (ROLE_SCOPES map).
 INSERT INTO user_apps (user_id, app_id, role)
 VALUES
-  ('1', 'app1', 'admin'),
-  ('1', 'app2', 'admin'),
-  ('2', 'app1', 'editor'),
-  ('3', 'app1', 'user')
+  ('f1a2b3c4d5e6f701', 'app1', 'admin'),
+  ('f1a2b3c4d5e6f701', 'app2', 'admin'),
+  ('f1a2b3c4d5e6f702', 'app1', 'editor'),
+  ('f1a2b3c4d5e6f703', 'app1', 'user')
 ON DUPLICATE KEY UPDATE
   role = VALUES(role);
 

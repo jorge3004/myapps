@@ -1,8 +1,27 @@
 import { User } from '../../models/user';
+import { DEV_SEED_USERS } from '../../seeds/devBootstrap';
 import { AppRole, IUserRepository, RegisteredUser } from '../userRepository';
 
-const users = new Map<string, User>();
-const userApps = new Map<string, AppRole[]>();
+const users = new Map<string, User>(
+    DEV_SEED_USERS.map((user) => [
+        user.id,
+        {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            passwordHash: user.passwordHash,
+            role: user.role,
+            scopes: [...(user.scopes || [])],
+            revokedScopes: [...(user.revokedScopes || [])]
+        }
+    ])
+);
+const userApps = new Map<string, AppRole[]>(
+    DEV_SEED_USERS.map((user) => [
+        user.id,
+        user.appRoles.map((role) => ({ ...role }))
+    ])
+);
 
 function cloneUser(user: User): User {
     return {

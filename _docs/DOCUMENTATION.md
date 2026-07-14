@@ -14,9 +14,16 @@
 6. [Gestión de Scopes y Permisos](#gestión-de-scopes-y-permisos)
 7. [Runtime Dinámico](#runtime-dinámico)
 8. [Auditoría](#auditoría)
-9. [Testing](#testing)
-10. [Tabla Rápida de Endpoints](#tabla-rápida-de-endpoints)
-11. [Troubleshooting](#troubleshooting)
+9. [Datos Iniciales (Seed)](#datos-iniciales-seed)
+    - [Usuarios Iniciales](#usuarios-iniciales)
+    - [Aplicaciones Iniciales](#aplicaciones-iniciales)
+    - [Inicialización SQL (MySQL)](#inicialización-sql-mysql)
+    - [Verificación de Migraciones](#verificación-de-migraciones)
+    - [Verificación de Seed](#verificación-de-seed)
+10. [Testing (Pruebas Unitarias)](#testing-pruebas-unitarias)
+11. [Gestión de Variables de Entorno y Secretos](#gestión-de-variables-de-entorno-y-secretos)
+12. [Tabla Rápida de Endpoints](#tabla-rápida-de-endpoints)
+13. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -583,22 +590,263 @@ Cambios en:
 
 ---
 
-## Testing
+## Datos Iniciales (Seed)
 
-### Usuarios de Prueba
+### Navegación Rápida de Seed
 
-| Usuario | Password | Rol | Apps |
-|---------|----------|-----|------|
-| `jorge` | `jorge123` | admin | app1, app2 |
-| `editor` | `editor123` | editor | app1 |
-| `user` | `user123` | user | app1 |
+- [Usuarios Iniciales](#usuarios-iniciales)
+- [Aplicaciones Iniciales](#aplicaciones-iniciales)
+- [Inicialización SQL (MySQL)](#inicialización-sql-mysql)
+- [Convención de Fuente Canónica](#convención-de-fuente-canónica)
+- [Checklist Manual (Aprendiz)](#checklist-manual-aprendiz)
+- [Acceso a MySQL por Consola](#acceso-a-mysql-por-consola)
+- [Verificación de Migraciones](#verificación-de-migraciones)
+- [Ejecución desde DBeaver](#ejecución-desde-dbeaver)
+- [Transacción durante Seed](#transacción-durante-seed)
+- [Verificación de Seed](#verificación-de-seed)
+- [ON DUPLICATE KEY UPDATE en este proyecto](#on-duplicate-key-update-en-este-proyecto)
 
-### Aplicaciones de Prueba
+### Usuarios Iniciales
+
+| ID | Usuario | Password | Rol | Apps |
+|----|---------|----------|-----|------|
+| `f1a2b3c4d5e6f701` | `jorge` | `jorge123` | admin | app1, app2 |
+| `f1a2b3c4d5e6f702` | `editor` | `editor123` | editor | app1 |
+| `f1a2b3c4d5e6f703` | `user` | `user123` | user | app1 |
+
+Fuente oficial (SQL): [backend/migrations/20260601_seed_dev.sql](../backend/migrations/20260601_seed_dev.sql)  
+Fuente oficial (memoria): [backend/src/seeds/devBootstrap.ts](../backend/src/seeds/devBootstrap.ts)
+
+### Aplicaciones Iniciales
 
 | ID | Nombre | API Key |
 |----|--------|---------|
 | `app1` | Catalogos | `app1_dev_key_2026` |
 | `app2` | Notificaciones | `app2_dev_key_2026` |
+
+### Inicialización SQL (MySQL)
+
+Concepto rápido:
+- **Migrations (DDL):** crean o ajustan estructura (tablas, columnas, tipos, índices, FK).
+- **Seed (DML):** inserta/actualiza datos iniciales en tablas ya existentes.
+
+En este proyecto, el bootstrap completo de una base vacía es:
+1. Ejecutar migrations (estructura)
+2. Ejecutar seed (datos mínimos)
+
+Si estás aprendiendo, conviene hacerlo de forma manual y en pasos cortos:
+1. Entrar a MySQL desde la consola o DBeaver.
+2. Verificar la estructura actual con `SHOW CREATE TABLE`.
+3. Ejecutar una migration por vez.
+4. Volver a verificar la estructura.
+5. Ejecutar el seed por bloques o archivo completo.
+6. Verificar que los datos iniciales quedaron bien.
+
+Archivos canónicos (sin duplicar SQL en esta documentación):
+1. [backend/migrations/20260529_create_users_table.sql](../backend/migrations/20260529_create_users_table.sql)
+2. [backend/migrations/20260529_create_user_apps_table.sql](../backend/migrations/20260529_create_user_apps_table.sql)
+3. [backend/migrations/20260601_create_apps_api_keys.sql](../backend/migrations/20260601_create_apps_api_keys.sql)
+4. [backend/migrations/20260601_seed_dev.sql](../backend/migrations/20260601_seed_dev.sql)
+
+### Convención de Fuente Canónica
+
+Definición simple:
+- Una fuente canónica es el archivo oficial de verdad para un tema.
+
+Reglas del equipo:
+1. Si hay conflicto entre documentación y SQL, prevalece el SQL canónico.
+2. La documentación explica, resume y enlaza; no duplica bloques SQL largos.
+3. Cualquier cambio funcional debe actualizar primero el archivo canónico.
+4. Después, se ajusta la documentación para reflejar ese cambio.
+5. Evitar mantener la misma lógica en dos lugares con contenido distinto.
+
+### Checklist Manual (Aprendiz)
+
+Flujo recomendado, en orden:
+1. Validar cliente MySQL en WSL (`mysql --version`).
+2. Cargar variables del `.env` en tu shell (`set -a`, `source .env`, `set +a`).
+3. Entrar a MySQL y validar sesión (`SELECT USER(), DATABASE();`).
+4. Verificar estructura actual con `SHOW CREATE TABLE ...`.
+5. Ejecutar migrations (una por una).
+6. Verificar estructura otra vez.
+7. Ejecutar seed.
+8. Verificar datos iniciales con `SELECT`.
+
+### Acceso a MySQL por Consola
+
+Si ya instalaste MySQL localmente en WSL, primero valida que el cliente esté disponible:
+
+```bash
+mysql --version
+```
+
+Si eso responde correctamente, entonces puedes entrar directo con:
+
+```bash
+mysql -u "$DB_USER" -p"$DB_PASSWORD" -h "$DB_HOST" "$DB_NAME"
+```
+
+Si prefieres que MySQL pida la contraseña de forma interactiva, usa:
+
+```bash
+mysql -u "$DB_USER" -p -h "$DB_HOST" "$DB_NAME"
+```
+
+Ejemplo simple, usando los valores del entorno de desarrollo:
+
+```bash
+mysql -u root -p -h 127.0.0.1 myapps_dev
+```
+
+Si usas `-p"$DB_PASSWORD"`, la contraseña queda tomada desde variable de entorno y no se te pregunta en pantalla.
+
+### Verificación de Login Exitoso
+
+Si el login fue correcto, deberías ver un prompt como:
+
+```text
+mysql>
+```
+
+Dentro de MySQL, puedes validar sesión y base activa con:
+
+```sql
+SELECT USER(), DATABASE();
+```
+
+Y salir con:
+
+```sql
+exit;
+```
+
+Tip rápido para evitar confusiones:
+- Si ves `mysql>`, estás dentro del cliente MySQL y puedes ejecutar `SELECT`, `SHOW`, `ALTER`, etc.
+- Si ves un prompt de shell (por ejemplo `jorge@equipo:~$`), estás en bash; ahí debes usar el comando `mysql ...` para entrar o ejecutar con `-e`.
+
+Importante: tener el archivo [backend/.env](../backend/.env) no significa que tu shell ya conozca esas variables. Para comandos de consola, primero debes cargarlas en la sesión actual.
+
+Ejemplo manual en WSL:
+
+```bash
+cd /home/jorge/myapps/backend
+set -a
+source .env
+set +a
+echo "$DB_USER"
+echo "$DB_HOST"
+```
+
+Después de eso, `mysql -u "$DB_USER" ...` sí puede usar esos valores.
+
+Si quieres verificar que el backend también las lea bien, corre:
+
+```bash
+cd /home/jorge/myapps/backend
+npm run check-env
+```
+
+Ese comando compara tu `.env` local contra `sample.env` y te ayuda a detectar claves faltantes.
+
+### Verificación de Migraciones
+
+Antes de seed, verifica que la estructura exista y sea compatible:
+
+`SHOW CREATE TABLE` no “crea” la tabla. Lo que hace es mostrar el SQL exacto que MySQL usaría para recrearla con la estructura actual: columnas, tipos, claves, índices y opciones.
+
+Eso sirve para comparar lo que esperas contra lo que realmente existe.
+
+```sql
+SHOW CREATE TABLE users;
+SHOW CREATE TABLE apps;
+SHOW CREATE TABLE user_apps;
+SHOW CREATE TABLE api_keys;
+```
+
+Si una tabla existe pero no tiene columnas/tipos esperados, no basta con el seed: debes aplicar una migración de ajuste (`ALTER TABLE ...`).
+
+Para practicar, puedes probar un cambio controlado y luego revertirlo:
+1. Quitar temporalmente una columna poco crítica.
+2. Correr `SHOW CREATE TABLE ...` y confirmar que el esquema ya no coincide.
+3. Restaurar la columna.
+4. Volver a correr la verificación y confirmar que ahora sí coincide.
+
+### Ejecución desde DBeaver
+
+Cuando la verificación ya esté bien, puedes ejecutar las migraciones y el seed desde el SQL Editor, en este orden:
+
+1. `20260529_create_users_table.sql`
+2. `20260529_create_user_apps_table.sql`
+3. `20260601_create_apps_api_keys.sql`
+4. `20260601_seed_dev.sql`
+
+También puedes ejecutar desde terminal:
+
+```bash
+cd backend
+mysql -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrations/20260529_create_users_table.sql
+mysql -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrations/20260529_create_user_apps_table.sql
+mysql -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrations/20260601_create_apps_api_keys.sql
+mysql -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrations/20260601_seed_dev.sql
+```
+
+### Transacción durante Seed
+
+Esta parte aplica específicamente cuando ejecutas el seed SQL.
+
+No es obligatoria si ejecutas archivo por archivo (MySQL suele trabajar con autocommit), pero **sí es recomendada** para el seed cuando quieres atomicidad.
+
+- Con transacción: `START TRANSACTION; ... COMMIT;`
+- Si algo no te convence en validación: `ROLLBACK;`
+
+Para práctica y seguridad:
+
+```sql
+START TRANSACTION;
+-- Ejecuta aquí el contenido de backend/migrations/20260601_seed_dev.sql
+-- Verifica con SELECTs
+COMMIT;
+-- Si hay dudas: ROLLBACK;
+```
+
+### Verificación de Seed
+
+Después de ejecutar seed:
+
+```sql
+SELECT id, username, email, role FROM users ORDER BY id;
+SELECT id, name FROM apps ORDER BY id;
+SELECT user_id, app_id, role FROM user_apps ORDER BY user_id, app_id;
+SELECT id, app_id, api_key FROM api_keys ORDER BY id;
+```
+
+### ON DUPLICATE KEY UPDATE en este proyecto
+
+En este proyecto, `ON DUPLICATE KEY UPDATE` está en el seed canónico [backend/migrations/20260601_seed_dev.sql](../backend/migrations/20260601_seed_dev.sql), en los 4 bloques `INSERT` de:
+
+1. `apps`
+2. `users`
+3. `user_apps`
+4. `api_keys`
+
+¿Qué logra?
+
+- Mantener idempotencia del seed a nivel de filas.
+
+- Si ya existe una fila por PK/UNIQUE, actualiza columnas definidas.
+- Si no existe, inserta.
+- **No** corrige estructura de tabla (columnas/tipos/FKs).
+- **No** actúa si no hay conflicto de clave única o primaria.
+
+### Recomendación de estudio
+
+Sí, por ahora conviene dejar estos pasos explicados de forma sencilla en la documentación.
+
+- Te ayuda a practicar comandos MySQL de forma manual.
+- Te deja un procedimiento repetible para revisar migraciones y seed.
+- Más adelante, cuando ya lo domines, se puede compactar o mover a una guía más breve.
+
+## Testing (Pruebas Unitarias)
 
 ### Ejecutar Tests
 

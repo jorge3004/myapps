@@ -1,8 +1,23 @@
 import { randomUUID } from 'crypto';
 import { ApiKey } from '../../models/app';
+import { DEV_SEED_APPS } from '../../seeds/devBootstrap';
 import { AppWithApiKeys, IAppRepository } from '../appRepository';
 
-const apps = new Map<string, AppWithApiKeys>();
+const apps = new Map<string, AppWithApiKeys>(
+    DEV_SEED_APPS.map((app) => [
+        app.id,
+        {
+            id: app.id,
+            name: app.name,
+            description: app.description || '',
+            createdAt: app.createdAt,
+            apiKeys: (app.apiKeys || []).map((key) => ({
+                ...key,
+                scopes: [...(key.scopes || [])]
+            }))
+        }
+    ])
+);
 
 function cloneApiKey(key: ApiKey): ApiKey {
     return {
