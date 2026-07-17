@@ -803,7 +803,7 @@ IMPORTANTE:
 ### Notas y Archivo Histórico
 
 Documentacion teorica resumida:
-- [_docs/NOTAS_SQL.md](NOTAS_SQL.md)
+- [_docs/notas/notas_sql.md](notas/notas_sql.md)
 
 Archivos SQL separados archivados (referencia/debug fino):
 - [backend/migrations_archive/split/](../backend/migrations_archive/split/)
