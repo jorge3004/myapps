@@ -1,5 +1,5 @@
 # Documentación del Sistema myapps
-**Última actualización:** 2026-07-02  
+**Última actualización:** 2026-07-17  
 **Estado:** active  
 **Ámbito:** Arquitectura, implementación y operación del backend TypeScript principal
 
@@ -7,23 +7,31 @@
 
 ## Tabla de Contenidos
 1. [Resumen Ejecutivo](#resumen-ejecutivo)
-2. [Arquitectura General](#arquitectura-general)
-3. [Autenticación y Autorización](#autenticación-y-autorización)
-4. [Gestión de Usuarios](#gestión-de-usuarios)
-5. [Gestión de Aplicaciones](#gestión-de-aplicaciones)
-6. [Gestión de Scopes y Permisos](#gestión-de-scopes-y-permisos)
-7. [Runtime Dinámico](#runtime-dinámico)
-8. [Auditoría](#auditoría)
-9. [Datos Iniciales (Seed)](#datos-iniciales-seed)
+2. [Guía Cronológica Global](#guía-cronológica-global)
+3. [Arquitectura General](#arquitectura-general)
+4. [Autenticación y Autorización](#autenticación-y-autorización)
+    - [Orden recomendado de pruebas (Auth)](#orden-recomendado-de-pruebas-auth)
+5. [Gestión de Usuarios](#gestión-de-usuarios)
+    - [Orden recomendado de pruebas (Usuarios)](#orden-recomendado-de-pruebas-usuarios)
+6. [Gestión de Aplicaciones](#gestión-de-aplicaciones)
+    - [Orden recomendado de pruebas (Apps)](#orden-recomendado-de-pruebas-apps)
+7. [Gestión de Scopes y Permisos](#gestión-de-scopes-y-permisos)
+   - [Orden recomendado de pruebas (Scopes)](#orden-recomendado-de-pruebas-scopes)
+8. [Runtime Dinámico](#runtime-dinámico)
+9. [Auditoría](#auditoría)
+10. [Datos Iniciales (Seed/Migrations)](#datos-iniciales-seedmigrations)
     - [Usuarios Iniciales](#usuarios-iniciales)
     - [Aplicaciones Iniciales](#aplicaciones-iniciales)
     - [Inicialización SQL (MySQL)](#inicialización-sql-mysql)
-    - [Verificación de Migraciones](#verificación-de-migraciones)
-    - [Verificación de Seed](#verificación-de-seed)
-10. [Testing (Pruebas Unitarias)](#testing-pruebas-unitarias)
-11. [Gestión de Variables de Entorno y Secretos](#gestión-de-variables-de-entorno-y-secretos)
-12. [Tabla Rápida de Endpoints](#tabla-rápida-de-endpoints)
-13. [Troubleshooting](#troubleshooting)
+    - [Framework de Trabajo (WSL)](#framework-de-trabajo-wsl)
+    - [Variables de Entorno Permanentes (WSL)](#variables-de-entorno-permanentes-wsl)
+    - [Verificación de Login Exitoso](#verificación-de-login-exitoso)
+    - [Bootstrap Mixto (Recomendado)](#bootstrap-mixto-recomendado)
+    - [Notas y Archivo Histórico](#notas-y-archivo-histórico)
+11. [Testing (Pruebas Unitarias)](#testing-pruebas-unitarias)
+12. [Gestión de Variables de Entorno y Secretos](#gestión-de-variables-de-entorno-y-secretos)
+13. [Tabla Rápida de Endpoints](#tabla-rápida-de-endpoints)
+14. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -51,6 +59,19 @@ myapps/
 ├── apps/catalog/backend/  # Legacy (Node.js) - siendo migrado
 └── packages/              # Módulos compartidos (user-mgmt, app-mgmt)
 ```
+
+## Guía Cronológica Global
+
+Orden recomendado para leer/ejecutar sin perderte:
+
+1. Preparar entorno y base en [Datos Iniciales (Seed/Migrations)](#datos-iniciales-seedmigrations).
+2. Ejecutar bootstrap en [Bootstrap Mixto (Recomendado)](#bootstrap-mixto-recomendado).
+3. Validar acceso en [Autenticación y Autorización](#autenticación-y-autorización).
+4. Probar operaciones en [Gestión de Usuarios](#gestión-de-usuarios), [Gestión de Aplicaciones](#gestión-de-aplicaciones) y [Gestión de Scopes y Permisos](#gestión-de-scopes-y-permisos).
+5. Revisar observabilidad en [Runtime Dinámico](#runtime-dinámico) y [Auditoría](#auditoría).
+6. Cerrar con [Testing (Pruebas Unitarias)](#testing-pruebas-unitarias).
+
+Si solo quieres arrancar rápido en desarrollo, empieza en [Framework de Trabajo (WSL)](#framework-de-trabajo-wsl).
 
 ---
 
@@ -89,6 +110,13 @@ Un usuario puede tener acceso a una app pero ser bloqueado de recursos específi
 ---
 
 ## Autenticación y Autorización
+
+### Orden recomendado de pruebas (Auth)
+
+1. Probar `POST /api/auth/login` con usuario de seed y validar que devuelve JWT.
+2. Probar `POST /api/auth/token` con `apiKey` y validar JWT tipo app.
+3. Usar ese token en un endpoint protegido para confirmar `Authorization: Bearer ...`.
+4. Probar caso inválido/expirado y confirmar `401 Unauthorized`.
 
 ### Login de Usuario
 
@@ -170,6 +198,14 @@ Middleware `verifyUserToken` extrae y valida el token. Si es inválido/expirado 
 ---
 
 ## Gestión de Usuarios
+
+### Orden recomendado de pruebas (Usuarios)
+
+1. `GET /api/users` para validar listado base y paginación.
+2. `POST /api/users` para crear usuario nuevo.
+3. `GET /api/users/by-email/:email` o `GET /api/users/:userId` para confirmar creación.
+4. `POST /api/users/:userId/apps` para asignar app/rol y luego `GET /api/users/:userId/apps`.
+5. `DELETE /api/users/:userId/apps/:appId` para validar remoción.
 
 ### Listar Usuarios
 
@@ -290,6 +326,14 @@ Todos públicos (sin autenticación requerida).
 
 ## Gestión de Scopes y Permisos
 
+### Orden recomendado de pruebas (Scopes)
+
+1. `GET /api/users/:userId/scopes` para establecer baseline.
+2. `POST /api/users/:userId/scopes` para agregar scope directo.
+3. `POST /api/users/:userId/revoked-scopes` para revocar scope efectivo.
+4. `DELETE /api/users/:userId/revoked-scopes` y `DELETE /api/users/:userId/scopes` para rollback funcional.
+5. Repetir `GET /api/users/:userId/scopes` y validar cálculo de scopes efectivos.
+
 ### Modelo de Roles → Scopes
 
 ```
@@ -383,6 +427,13 @@ Scopes efectivos = (scopes derivados del role + scopes directos) - scopes revoca
 ---
 
 ## Gestión de Aplicaciones
+
+### Orden recomendado de pruebas (Apps)
+
+1. `GET /api/apps` para validar estado inicial.
+2. `POST /api/apps` para crear app nueva.
+3. `POST /api/apps/:appId/apikeys` para generar key y scopes.
+4. Probar revocación por app y global para confirmar ciclo de vida de API keys.
 
 ### Listar Aplicaciones
 
@@ -590,21 +641,18 @@ Cambios en:
 
 ---
 
-## Datos Iniciales (Seed)
+## Datos Iniciales (Seed/Migrations)
 
-### Navegación Rápida de Seed
+### Navegación Rápida de Seed/Migrations
 
 - [Usuarios Iniciales](#usuarios-iniciales)
 - [Aplicaciones Iniciales](#aplicaciones-iniciales)
 - [Inicialización SQL (MySQL)](#inicialización-sql-mysql)
-- [Convención de Fuente Canónica](#convención-de-fuente-canónica)
-- [Checklist Manual (Aprendiz)](#checklist-manual-aprendiz)
-- [Acceso a MySQL por Consola](#acceso-a-mysql-por-consola)
-- [Verificación de Migraciones](#verificación-de-migraciones)
-- [Ejecución desde DBeaver](#ejecución-desde-dbeaver)
-- [Transacción durante Seed](#transacción-durante-seed)
-- [Verificación de Seed](#verificación-de-seed)
-- [ON DUPLICATE KEY UPDATE en este proyecto](#on-duplicate-key-update-en-este-proyecto)
+- [Framework de Trabajo (WSL)](#framework-de-trabajo-wsl)
+- [Variables de Entorno Permanentes (WSL)](#variables-de-entorno-permanentes-wsl)
+- [Verificación de Login Exitoso](#verificación-de-login-exitoso)
+- [Bootstrap Mixto (Recomendado)](#bootstrap-mixto-recomendado)
+- [Notas y Archivo Histórico](#notas-y-archivo-histórico)
 
 ### Usuarios Iniciales
 
@@ -614,7 +662,7 @@ Cambios en:
 | `f1a2b3c4d5e6f702` | `editor` | `editor123` | editor | app1 |
 | `f1a2b3c4d5e6f703` | `user` | `user123` | user | app1 |
 
-Fuente oficial (SQL): [backend/migrations/20260601_seed_dev.sql](../backend/migrations/20260601_seed_dev.sql)  
+Fuente oficial (SQL): [backend/migrations/20260716_bootstrap_dev_mixed.sql](../backend/migrations/20260716_bootstrap_dev_mixed.sql)  
 Fuente oficial (memoria): [backend/src/seeds/devBootstrap.ts](../backend/src/seeds/devBootstrap.ts)
 
 ### Aplicaciones Iniciales
@@ -627,78 +675,74 @@ Fuente oficial (memoria): [backend/src/seeds/devBootstrap.ts](../backend/src/see
 ### Inicialización SQL (MySQL)
 
 Concepto rápido:
-- **Migrations (DDL):** crean o ajustan estructura (tablas, columnas, tipos, índices, FK).
-- **Seed (DML):** inserta/actualiza datos iniciales en tablas ya existentes.
+1. **Schema migration (DDL):** estructura.
+2. **Seed / data migration (DML):** datos.
+3. **Migración mixta (DDL + DML):** ambas en un solo archivo.
 
-En este proyecto, el bootstrap completo de una base vacía es:
-1. Ejecutar migrations (estructura)
-2. Ejecutar seed (datos mínimos)
+Ruta recomendada para este proyecto en etapa actual:
+1. usar bootstrap mixto para reset rapido de desarrollo.
+2. conservar ruta separada solo como referencia/debugging fino (archivada).
 
-Si estás aprendiendo, conviene hacerlo de forma manual y en pasos cortos:
-1. Entrar a MySQL desde la consola o DBeaver.
-2. Verificar la estructura actual con `SHOW CREATE TABLE`.
-3. Ejecutar una migration por vez.
-4. Volver a verificar la estructura.
-5. Ejecutar el seed por bloques o archivo completo.
-6. Verificar que los datos iniciales quedaron bien.
+Archivo principal activo:
+- [backend/migrations/20260716_bootstrap_dev_mixed.sql](../backend/migrations/20260716_bootstrap_dev_mixed.sql)
 
-Archivos canónicos (sin duplicar SQL en esta documentación):
-1. [backend/migrations/20260529_create_users_table.sql](../backend/migrations/20260529_create_users_table.sql)
-2. [backend/migrations/20260529_create_user_apps_table.sql](../backend/migrations/20260529_create_user_apps_table.sql)
-3. [backend/migrations/20260601_create_apps_api_keys.sql](../backend/migrations/20260601_create_apps_api_keys.sql)
-4. [backend/migrations/20260601_seed_dev.sql](../backend/migrations/20260601_seed_dev.sql)
+Estado actual de carpeta activa:
+- `backend/migrations/` contiene solo ese archivo como entrypoint de bootstrap.
 
-### Convención de Fuente Canónica
+Ruta separada archivada:
+- [backend/migrations_archive/split/](../backend/migrations_archive/split/)
 
-Definición simple:
-- Una fuente canónica es el archivo oficial de verdad para un tema.
+### Framework de Trabajo (WSL)
 
-Reglas del equipo:
-1. Si hay conflicto entre documentación y SQL, prevalece el SQL canónico.
-2. La documentación explica, resume y enlaza; no duplica bloques SQL largos.
-3. Cualquier cambio funcional debe actualizar primero el archivo canónico.
-4. Después, se ajusta la documentación para reflejar ese cambio.
-5. Evitar mantener la misma lógica en dos lugares con contenido distinto.
+Flujo recomendado (cronológico):
+1. Confirmar cliente MySQL instalado en WSL.
+2. Cargar variables de entorno en la shell (idealmente permanentes via `~/.bashrc`).
+3. Entrar por terminal `mysql`.
+4. Verificar sesión/base activa.
+5. Ejecutar bootstrap mixto.
+6. Verificar estructura y datos.
 
-### Checklist Manual (Aprendiz)
+Si prefieres DBeaver de forma opcional, ten a mano:
+- host
+- database
+- user
+- password
 
-Flujo recomendado, en orden:
-1. Validar cliente MySQL en WSL (`mysql --version`).
-2. Cargar variables del `.env` en tu shell (`set -a`, `source .env`, `set +a`).
-3. Entrar a MySQL y validar sesión (`SELECT USER(), DATABASE();`).
-4. Verificar estructura actual con `SHOW CREATE TABLE ...`.
-5. Ejecutar migrations (una por una).
-6. Verificar estructura otra vez.
-7. Ejecutar seed.
-8. Verificar datos iniciales con `SELECT`.
-
-### Acceso a MySQL por Consola
-
-Si ya instalaste MySQL localmente en WSL, primero valida que el cliente esté disponible:
+Comprobación de instalación en WSL:
 
 ```bash
 mysql --version
 ```
 
-Si eso responde correctamente, entonces puedes entrar directo con:
+Si falta el cliente en WSL (Ubuntu):
+
+```bash
+sudo apt install mysql-client-core
+mysql --version
+```
+
+### Variables de Entorno Permanentes (WSL)
+
+Objetivo: dejar las variables disponibles en cada terminal nueva.
+
+```bash
+grep -q 'MYAPPS_BACKEND_ENV="/home/jorge/myapps/backend/.env"' ~/.bashrc || cat >> ~/.bashrc <<'EOF'
+# myapps backend env autoload (WSL interactive shells)
+export MYAPPS_BACKEND_ENV="/home/jorge/myapps/backend/.env"
+if [ -f "$MYAPPS_BACKEND_ENV" ]; then
+  set -a
+  source "$MYAPPS_BACKEND_ENV"
+  set +a
+fi
+EOF
+source ~/.bashrc
+```
+
+Login por consola (ya con variables cargadas):
 
 ```bash
 mysql -u "$DB_USER" -p"$DB_PASSWORD" -h "$DB_HOST" "$DB_NAME"
 ```
-
-Si prefieres que MySQL pida la contraseña de forma interactiva, usa:
-
-```bash
-mysql -u "$DB_USER" -p -h "$DB_HOST" "$DB_NAME"
-```
-
-Ejemplo simple, usando los valores del entorno de desarrollo:
-
-```bash
-mysql -u root -p -h 127.0.0.1 myapps_dev
-```
-
-Si usas `-p"$DB_PASSWORD"`, la contraseña queda tomada desde variable de entorno y no se te pregunta en pantalla.
 
 ### Verificación de Login Exitoso
 
@@ -724,127 +768,49 @@ Tip rápido para evitar confusiones:
 - Si ves `mysql>`, estás dentro del cliente MySQL y puedes ejecutar `SELECT`, `SHOW`, `ALTER`, etc.
 - Si ves un prompt de shell (por ejemplo `jorge@equipo:~$`), estás en bash; ahí debes usar el comando `mysql ...` para entrar o ejecutar con `-e`.
 
-Importante: tener el archivo [backend/.env](../backend/.env) no significa que tu shell ya conozca esas variables. Para comandos de consola, primero debes cargarlas en la sesión actual.
-
-Ejemplo manual en WSL:
-
-```bash
-cd /home/jorge/myapps/backend
-set -a
-source .env
-set +a
-echo "$DB_USER"
-echo "$DB_HOST"
-```
-
-Después de eso, `mysql -u "$DB_USER" ...` sí puede usar esos valores.
-
-Si quieres verificar que el backend también las lea bien, corre:
-
-```bash
-cd /home/jorge/myapps/backend
-npm run check-env
-```
-
-Ese comando compara tu `.env` local contra `sample.env` y te ayuda a detectar claves faltantes.
-
-### Verificación de Migraciones
-
-Antes de seed, verifica que la estructura exista y sea compatible:
-
-`SHOW CREATE TABLE` no “crea” la tabla. Lo que hace es mostrar el SQL exacto que MySQL usaría para recrearla con la estructura actual: columnas, tipos, claves, índices y opciones.
-
-Eso sirve para comparar lo que esperas contra lo que realmente existe.
+Consultas utiles de verificacion rapida:
 
 ```sql
 SHOW CREATE TABLE users;
-SHOW CREATE TABLE apps;
-SHOW CREATE TABLE user_apps;
-SHOW CREATE TABLE api_keys;
+SELECT COUNT(*) AS total, SUM(revoked_scopes IS NULL) AS nulls FROM users;
+SELECT id, username, email, role FROM users ORDER BY id;
+SELECT id, name FROM apps ORDER BY id;
 ```
 
-Si una tabla existe pero no tiene columnas/tipos esperados, no basta con el seed: debes aplicar una migración de ajuste (`ALTER TABLE ...`).
+### Bootstrap Mixto (Recomendado)
 
-Para practicar, puedes probar un cambio controlado y luego revertirlo:
-1. Quitar temporalmente una columna poco crítica.
-2. Correr `SHOW CREATE TABLE ...` y confirmar que el esquema ya no coincide.
-3. Restaurar la columna.
-4. Volver a correr la verificación y confirmar que ahora sí coincide.
+Script principal:
+- [backend/migrations/20260716_bootstrap_dev_mixed.sql](../backend/migrations/20260716_bootstrap_dev_mixed.sql)
 
-### Ejecución desde DBeaver
-
-Cuando la verificación ya esté bien, puedes ejecutar las migraciones y el seed desde el SQL Editor, en este orden:
-
-1. `20260529_create_users_table.sql`
-2. `20260529_create_user_apps_table.sql`
-3. `20260601_create_apps_api_keys.sql`
-4. `20260601_seed_dev.sql`
-
-También puedes ejecutar desde terminal:
+Ejecucion desde terminal:
 
 ```bash
 cd backend
-mysql -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrations/20260529_create_users_table.sql
-mysql -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrations/20260529_create_user_apps_table.sql
-mysql -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrations/20260601_create_apps_api_keys.sql
-mysql -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrations/20260601_seed_dev.sql
+mysql -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrations/20260716_bootstrap_dev_mixed.sql
 ```
 
-### Transacción durante Seed
-
-Esta parte aplica específicamente cuando ejecutas el seed SQL.
-
-No es obligatoria si ejecutas archivo por archivo (MySQL suele trabajar con autocommit), pero **sí es recomendada** para el seed cuando quieres atomicidad.
-
-- Con transacción: `START TRANSACTION; ... COMMIT;`
-- Si algo no te convence en validación: `ROLLBACK;`
-
-Para práctica y seguridad:
+Ejecucion desde cliente `mysql`:
 
 ```sql
-START TRANSACTION;
--- Ejecuta aquí el contenido de backend/migrations/20260601_seed_dev.sql
--- Verifica con SELECTs
-COMMIT;
--- Si hay dudas: ROLLBACK;
+SOURCE /home/jorge/myapps/backend/migrations/20260716_bootstrap_dev_mixed.sql;
 ```
 
-### Verificación de Seed
+IMPORTANTE:
+- Este script hace `DROP TABLE` de las tablas del backend.
+- Al ejecutarlo, se elimina la data previa de esas tablas.
+- Usar solo en entorno de desarrollo.
 
-Después de ejecutar seed:
+### Notas y Archivo Histórico
 
-```sql
-SELECT id, username, email, role FROM users ORDER BY id;
-SELECT id, name FROM apps ORDER BY id;
-SELECT user_id, app_id, role FROM user_apps ORDER BY user_id, app_id;
-SELECT id, app_id, api_key FROM api_keys ORDER BY id;
-```
+Documentacion teorica resumida:
+- [_docs/NOTAS_SQL.md](NOTAS_SQL.md)
 
-### ON DUPLICATE KEY UPDATE en este proyecto
+Archivos SQL separados archivados (referencia/debug fino):
+- [backend/migrations_archive/split/](../backend/migrations_archive/split/)
 
-En este proyecto, `ON DUPLICATE KEY UPDATE` está en el seed canónico [backend/migrations/20260601_seed_dev.sql](../backend/migrations/20260601_seed_dev.sql), en los 4 bloques `INSERT` de:
-
-1. `apps`
-2. `users`
-3. `user_apps`
-4. `api_keys`
-
-¿Qué logra?
-
-- Mantener idempotencia del seed a nivel de filas.
-
-- Si ya existe una fila por PK/UNIQUE, actualiza columnas definidas.
-- Si no existe, inserta.
-- **No** corrige estructura de tabla (columnas/tipos/FKs).
-- **No** actúa si no hay conflicto de clave única o primaria.
-
-### Recomendación de estudio
-
-Sí, por ahora conviene dejar estos pasos explicados de forma sencilla en la documentación.
-
-- Te ayuda a practicar comandos MySQL de forma manual.
-- Te deja un procedimiento repetible para revisar migraciones y seed.
-- Más adelante, cuando ya lo domines, se puede compactar o mover a una guía más breve.
+Ejemplo archivado de seed con decision manual de transaccion (`COMMIT/ROLLBACK` en consola):
+- [backend/migrations_archive/test/007_seed_dev_manual_decision.sql](../backend/migrations_archive/test/007_seed_dev_manual_decision.sql)
+- [backend/migrations_archive/test/README.md](../backend/migrations_archive/test/README.md)
 
 ## Testing (Pruebas Unitarias)
 

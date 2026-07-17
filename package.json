@@ -8,6 +8,7 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
+    "mysql2": "^3.22.6",
     "nanoid": "^5.1.11"
   },
   "devDependencies": {
