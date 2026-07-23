@@ -1,5 +1,115 @@
 # Notas SQL (Resumen Teorico)
 
+## Arranque rapido
+
+### Mapa de terminos relacionados
+
+| Termino | Se relaciona con | Nota corta | Ver |
+|---|---|---|---|
+| `DDL` | `DCA` | cambia estructura | [DDL vs DML](#ddl-vs-dml-version-limpia) |
+| `DML` | `CRUD`, `IUD` | cambia filas | [DDL vs DML](#ddl-vs-dml-version-limpia) |
+| `DQL` | `SELECT` | solo consulta | [DDL vs DML](#ddl-vs-dml-version-limpia) |
+| `DCA` | `DDL` | mnemotecnia de `DROP/CREATE/ALTER` | [DDL vs DML](#ddl-vs-dml-version-limpia) |
+| `CRUD` | `DML`, `DQL` | `Create/Read/Update/Delete` | [DDL vs DML](#ddl-vs-dml-version-limpia) |
+| `IUD` | `DML` | `INSERT/UPDATE/DELETE` | [DDL vs DML](#ddl-vs-dml-version-limpia) |
+| `TRUNCATE` | `DDL` | vacia tabla rapido | [TRUNCATE vs DELETE](#truncate-vs-delete-sin-where-mysql) |
+| `DELETE` | `DML` | borra filas (con WHERE) | [TRUNCATE vs DELETE](#truncate-vs-delete-sin-where-mysql) |
+
+### Checklist operativo (1 minuto)
+
+- Antes de `UPDATE` o `DELETE`, corre primero un `SELECT` con el mismo `WHERE`.
+- Si hay relaciones, piensa en orden: hijas -> padre.
+- Para joins, usa `LEFT JOIN` cuando quieras conservar toda la tabla izquierda.
+- En MySQL, asume que DDL puede confirmar cambios implicita e inmediatamente.
+- En passwords, nunca "recuperar" texto plano: comparar hash o resetear password.
+
+Nota:
+
+- En material formal, `SELECT` suele tratarse como `DQL`.
+- En practica diaria, muchos equipos lo agrupan junto a DML por simplicidad.
+
+## Tabla de contenido
+
+1. [Arranque rapido](#arranque-rapido)
+2. [DDL vs DML (version limpia)](#ddl-vs-dml-version-limpia)
+3. [Tablas relacionadas: idea base](#tablas-relacionadas-idea-base)
+4. [Tipos de JOIN (resumen practico)](#tipos-de-join-resumen-practico)
+5. [Borrar datos cuando hay dependencias](#borrar-datos-cuando-hay-dependencias)
+6. [Borrado automatico de filas: ON DELETE CASCADE](#borrado-automatico-de-filas-on-delete-cascade)
+7. [Borrar tablas relacionadas (DROP TABLE)](#borrar-tablas-relacionadas-drop-table)
+8. [Errores tipicos de foreign keys](#errores-tipicos-de-foreign-keys)
+9. [SHOW vs SELECT](#show-vs-select)
+10. [SHOW COLUMNS: Field, LIKE y WHERE](#show-columns-field-like-y-where)
+11. [JSON en MySQL vs JavaScript](#json-en-mysql-vs-javascript)
+12. [Estrictez de columna JSON](#estrictez-de-columna-json)
+13. [Transacciones en Seeds (resumen)](#transacciones-en-seeds-resumen)
+14. [ON DUPLICATE KEY UPDATE (resumen)](#on-duplicate-key-update-resumen)
+15. [Migracion Mixta (DDL + DML)](#migracion-mixta-ddl--dml)
+16. [Seguridad operativa en produccion (DB)](#seguridad-operativa-en-produccion-db)
+17. [Passwords y recuperacion (bcrypt)](#passwords-y-recuperacion-bcrypt)
+
+## DDL vs DML (version limpia)
+
+Resumen rapido:
+
+- `DDL` define o cambia estructura (schema).
+- `DML` inserta, modifica o elimina filas.
+- En MySQL, la mayoria de `DDL` hace commit implicito.
+
+### Tabla compacta (checkmarks)
+
+Leyenda:
+
+- `✅` = si
+- `❌` = no
+
+| SQL | DDL | DML | Commit impl.* | Impacto |
+|---|---|---|---|---|
+| `CREATE TABLE` | ✅ | ❌ | ✅ | estructura |
+| `ALTER TABLE` | ✅ | ❌ | ✅ | estructura |
+| `DROP TABLE` | ✅ | ❌ | ✅ | estructura |
+| `TRUNCATE TABLE` | ✅ | ❌ | ✅ | filas (via DDL) |
+| `CREATE INDEX` | ✅ | ❌ | ✅ | estructura |
+| `DROP INDEX` | ✅ | ❌ | ✅ | estructura |
+| `INSERT` | ❌ | ✅ | ❌ | filas |
+| `UPDATE` | ❌ | ✅ | ❌ | filas |
+| `DELETE` | ❌ | ✅ | ❌ | filas |
+| `SELECT` | ❌ | ❌** | ❌ | consulta |
+| `SHOW` | ❌ | ❌ | ❌ | metadatos |
+| `START TRANSACTION` | ❌ | ❌ | ❌ | control |
+| `COMMIT` | ❌ | ❌ | n/a | control |
+| `ROLLBACK` | ❌ | ❌ | n/a | control |
+
+\* En MySQL, el DDL suele hacer commit implicito antes y despues del statement.
+
+\** En material formal, `SELECT` suele clasificarse como DQL.
+
+### Diferencias clave
+
+- Proposito: `DDL` cambia objetos; `DML` cambia datos.
+- Alcance: `DDL` afecta schema; `DML` afecta filas.
+- Transacciones: `DML` se beneficia mas de `ROLLBACK`; `DDL` en MySQL suele confirmar implicitamente.
+- Frecuencia: `DDL` es menos frecuente; `DML` es operacion diaria.
+
+### TRUNCATE vs DELETE sin WHERE (MySQL)
+
+Ambos pueden vaciar una tabla, pero no son equivalentes:
+
+| Comando | Tipo | Rapidez | Rollback | Trigger DELETE | AUTO_INCREMENT |
+|---|---|---|---|---|---|
+| `DELETE FROM tabla;` | DML | menor en tablas grandes | posible en transaccion abierta | si aplica | conserva contador |
+| `TRUNCATE TABLE tabla;` | DDL | normalmente mayor | normalmente no (commit impl.) | no | reinicia contador |
+
+Notas MySQL practicas:
+
+- `TRUNCATE` puede estar bloqueado si hay foreign keys que referencian la tabla.
+- `TRUNCATE` se parece mas a "recrear rapido" que a un `DELETE` fila por fila.
+
+Regla de uso:
+
+- usa `DELETE` cuando necesitas control transaccional fino o logica por fila.
+- usa `TRUNCATE` cuando quieres limpieza rapida total y aceptas su comportamiento DDL.
+
 ## Tablas relacionadas: idea base
 
 - Una tabla puede depender de otra usando una clave foranea (`FOREIGN KEY`).
@@ -34,6 +144,53 @@ JOIN apps a ON a.id = ua.app_id;
 ```
 
 Eso no crea nada nuevo; solo muestra la relacion ya definida por las foreign keys.
+
+## Many-to-many y variantes
+
+Relacion 1 a 1 (one-to-one):
+
+- Un registro de A se relaciona con un solo registro de B.
+- Un registro de B se relaciona con un solo registro de A.
+- Implementacion comun: FK unica (`UNIQUE`) en una de las tablas.
+
+Relacion 1 a muchos (one-to-many):
+
+- Un registro padre se relaciona con muchos registros hijos.
+- Cada hijo pertenece a un solo padre.
+- Implementacion comun: FK en la tabla hija.
+
+Relacion muchos a muchos (many-to-many):
+
+- Un registro de A puede relacionarse con muchos de B.
+- Un registro de B puede relacionarse con muchos de A.
+- Implementacion comun: tabla puente con dos FK.
+
+Ejemplo de este repo:
+
+- `users` <-> `apps` se modela con `user_apps`.
+- `user_apps.user_id` referencia `users.id`.
+- `user_apps.app_id` referencia `apps.id`.
+- `PRIMARY KEY (user_id, app_id)` evita duplicar la misma relacion usuario-app.
+
+Variantes comunes en many-to-many:
+
+- Tabla puente pura:
+  - solo contiene las dos FK (y a veces timestamps).
+- Tabla puente con atributos:
+  - ademas de FK, guarda datos de la relacion (ejemplo: `role`, `granted_at`, `status`).
+  - en este repo, `user_apps.role` ya es un atributo de relacion.
+- PK compuesta en puente:
+  - `PRIMARY KEY (fk_a, fk_b)`.
+  - ventaja: mantiene unicidad natural de la relacion.
+- PK surrogate + UNIQUE:
+  - agregar `id` propio a la tabla puente.
+  - mantener `UNIQUE (fk_a, fk_b)` para no perder unicidad de negocio.
+  - util cuando otras tablas deben referenciar una fila concreta del puente.
+
+Regla practica de diseno:
+
+- Si la tabla puente solo representa la relacion, PK compuesta suele ser una opcion muy buena.
+- Si la relacion crecera con mas logica o referencias externas, puede convenir `id` propio + `UNIQUE` compuesto.
 
 ## Tipos de JOIN (resumen practico)
 
@@ -341,19 +498,6 @@ Regla practica:
 - para `DELETE` de datos: piensa en filas hijas y filas padre
 - para `DROP TABLE`: piensa en tablas hijas y tablas padre
 
-## ALTER TABLE vs UPDATE
-
-- `ALTER TABLE`: cambia estructura (columnas, indices, constraints).
-- `UPDATE ... SET ...`: cambia datos en filas existentes.
-- En migraciones suelen usarse juntos: primero estructura, luego normalizacion de datos.
-
-Ejemplo:
-
-```sql
-ALTER TABLE users ADD COLUMN revoked_scopes JSON NULL;
-UPDATE users SET revoked_scopes = JSON_ARRAY() WHERE revoked_scopes IS NULL;
-```
-
 ## SHOW vs SELECT
 
 - `SHOW`: inspecciona metadatos/estructura.
@@ -378,6 +522,71 @@ SELECT JSON_ARRAY('a', 'b');
 ```sql
 SHOW COLUMNS FROM users WHERE Type LIKE 'json%';
 ```
+
+## Como ver constraints de una tabla (MySQL)
+
+Objetivo:
+
+- saber si una tabla tiene `CHECK`, `PRIMARY KEY`, `FOREIGN KEY`, `UNIQUE`.
+- saber que columnas participan en cada constraint.
+
+Metodo rapido (recomendado):
+
+```sql
+SHOW CREATE TABLE users;
+```
+
+Ese comando muestra el `CREATE TABLE` completo, incluyendo constraints definidos.
+
+Metodo con `INFORMATION_SCHEMA`:
+
+1. Ver constraints de la tabla
+
+```sql
+SELECT
+  tc.CONSTRAINT_NAME,
+  tc.CONSTRAINT_TYPE,
+  tc.TABLE_NAME
+FROM information_schema.TABLE_CONSTRAINTS tc
+WHERE tc.TABLE_SCHEMA = DATABASE()
+  AND tc.TABLE_NAME = 'users'
+ORDER BY tc.CONSTRAINT_TYPE, tc.CONSTRAINT_NAME;
+```
+
+2. Ver columnas asociadas a cada constraint
+
+```sql
+SELECT
+  kcu.CONSTRAINT_NAME,
+  kcu.TABLE_NAME,
+  kcu.COLUMN_NAME,
+  kcu.ORDINAL_POSITION
+FROM information_schema.KEY_COLUMN_USAGE kcu
+WHERE kcu.TABLE_SCHEMA = DATABASE()
+  AND kcu.TABLE_NAME = 'users'
+ORDER BY kcu.CONSTRAINT_NAME, kcu.ORDINAL_POSITION;
+```
+
+3. Ver solo CHECK constraints
+
+```sql
+SELECT
+  cc.CONSTRAINT_NAME,
+  cc.CHECK_CLAUSE
+FROM information_schema.CHECK_CONSTRAINTS cc
+JOIN information_schema.TABLE_CONSTRAINTS tc
+  ON tc.CONSTRAINT_SCHEMA = cc.CONSTRAINT_SCHEMA
+ AND tc.CONSTRAINT_NAME = cc.CONSTRAINT_NAME
+WHERE tc.TABLE_SCHEMA = DATABASE()
+  AND tc.TABLE_NAME = 'users'
+  AND tc.CONSTRAINT_TYPE = 'CHECK';
+```
+
+Notas practicas:
+
+- `INFORMATION_SCHEMA` es mas util para reportes/automatizacion.
+- `SHOW CREATE TABLE` es mejor para inspeccion humana rapida.
+- Si no ves `CHECK`, revisa version/engine de MySQL porque el soporte puede variar segun version.
 
 ## JSON en MySQL vs JavaScript
 
@@ -449,7 +658,7 @@ Desventajas/limites:
 - Si no existe, inserta.
 - No corrige estructura de tabla (schema).
 
-## Migración Mixta (DDL + DML)
+## Migracion Mixta (DDL + DML)
 
 - Util para bootstrap rapido en etapa temprana cuando estructura y datos estan acoplados.
 - Recomendacion al crecer el proyecto: separar schema y data para rollback/debug mas fino.
