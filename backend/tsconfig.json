@@ -7,7 +7,15 @@
         "rootDir": "src",
         "strict": true,
         "esModuleInterop": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUncheckedSideEffectImports": true,
+        "noFallthroughCasesInSwitch": true,
+        "allowUnreachableCode": false,
+        "noUncheckedIndexedAccess": true,
+        // "noPropertyAccessFromIndexSignature": true
     },
     "include": [
         "src/**/*"

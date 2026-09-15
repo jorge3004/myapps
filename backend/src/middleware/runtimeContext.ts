@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { resolveRuntimeContext } from '../runtime/resolve';
 import { runWithRuntimeContext } from '../runtime/requestContext';
-
+import { RuntimeResolvedContext } from '../runtime/types';
 function headerValue(req: Request, name: string): string | undefined {
     const value = req.header(name);
     return value ? String(value).trim().toLowerCase() : undefined;
 }
 
-function applyRuntimeHeaders(res: Response, runtime: any): void {
+function applyRuntimeHeaders(res: Response, runtime: RuntimeResolvedContext): void {
     res.setHeader('x-runtime-env-requested', runtime.requestedEnvironment);
     res.setHeader('x-runtime-env-served', runtime.servedEnvironment);
     res.setHeader('x-data-source-requested', runtime.requestedDataSource);
