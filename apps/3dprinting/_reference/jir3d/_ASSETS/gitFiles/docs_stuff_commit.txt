@@ -1,0 +1,40 @@
+📚 DOCS : README Annotations Forgotten
+
+📎 Task : https://github.com/LeftFieldAdam/countdown
+
+❓ Why : 
+
+* To explaining the my changes to styles and other stuff in the repository.
+* All is included in the README.md file.
+
+‼️ Sides effects:
+
+Does not apply in this case.
+
+✅ Files added:
+
+No files were added at this time.
+
+⚠️ Files changed:
+
+* README.md
+
+❌ Files removed:
+
+No files were deleted at this time.
+
+📗 Code files added to docs.
+
+Does not apply in this case.
+
+📘 Files changed from docs.
+
+Does not apply in this case.
+
+📙 Code files deprecated from docs.
+
+Does not apply in this case.
+
+📕 Code files removed from docs.
+
+Does not apply in this case.

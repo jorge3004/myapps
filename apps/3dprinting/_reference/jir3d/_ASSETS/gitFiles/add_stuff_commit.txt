@@ -1,0 +1,65 @@
+➕ ADD : CTO Birthday Countdown
+
+📎 Task : https://github.com/LeftFieldAdam/countdown
+
+❓ Why : 
+
+* For having a back-up of what has been done until now in this evaluation.
+* To presenting some advances to the evaluator.
+* To implementing some of the tasks requested by the evaluator. 
+
+💡 How :
+
+* Pushing the initial commit as a a first feature according to repo instructions.
+* Including the mean task solved in the most efficient possible way, at least in my opinion.
+* Replacing class based components for functional based ones because they are my strongest technology.
+
+‼️ Sides effects:
+
+* Tests cases are still in process of being updated.
+* PWA is still in process of being generated.
+* README file is still in process of being changed.
+
+✅ Files added:
+
+* .gitignore
+* LICENSE
+* README.md
+* package.json
+* public/favicon.ico
+* public/index.html
+* public/logo192.png
+* public/logo512.png
+* public/manifest.json
+* public/robots.txt
+* src/App.css
+* src/App.jsx
+* src/App.test.js
+* src/components/Content/Content.jsx
+* src/components/Content/index.js
+* src/components/Header/Header.jsx
+* src/components/Header/index.js
+* src/components/index.js
+* src/constants/admin.js
+* src/constants/dates.js
+* src/constants/index.js
+* src/helpers/countdown.js
+* src/index.css
+* src/index.js
+* src/logo.svg
+* src/modules/Countdown.jsx
+* src/modules/components/TimeChild/TimeChild.jsx
+* src/modules/components/TimeChildList/TimeChildList.jsx
+* src/modules/index.js
+* src/reportWebVitals.js
+* src/setupTests.js
+* src/style/Countdown.css
+* yarn.lock
+
+⚠️ Files changed:
+
+Because I created a totally new repository, no files were modified at this time.
+
+❌ Files removed:
+
+Because I created a totally new repository, no files were deleted at this time.

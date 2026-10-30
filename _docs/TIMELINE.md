@@ -32,7 +32,6 @@ Este archivo es la fuente central de historial técnico para saber qué cambió,
   - identity prerequisite (AuthN)
   - app access gate
   - resource authorization (AuthZ)
-- Validar comportamiento de `GET /api/users/by-username/:username` en el backend activo.
 - Verificar que implementación de auditoría de cambios de permisos esté completa y funcional (registrada en este documento 2026-05-29).
 - Cerrar validacion de auth/login (casos restantes + regresion de app access).
   -Validar endpoints nuevos de user-app en Insomnia:
@@ -44,6 +43,21 @@ Este archivo es la fuente central de historial técnico para saber qué cambió,
 ---
 
 ## Hitos
+
+### 2026-10-30 (3DPrinting)
+- Estado: active
+- Resumen: Esqueleto vacío de `apps/3dprinting` (backend TS con `/health`, frontend y plugin OctoPrint como carpetas documentadas) y análisis de `jorge3004/JIR3D`.
+- Impacto: define qué migrar, qué no y dónde vive el plugin de OctoPrint.
+- Referencias: [notas_3dprinting.md](notas/notas_3dprinting.md)
+
+### 2026-10-30
+- Estado: active
+- Resumen: Cierre de errores de `tsc` estricto y modularización de controladores de usuario
+- Impacto:
+  - `tsc --noEmit` sin errores (flags `noImplicitReturns`, `exactOptionalPropertyTypes`, `noUnusedParameters`); `db.ts` valida variables de entorno al arrancar.
+  - `userController.ts` dividido en `userScopeController.ts` y `userAppRoleController.ts`, con helpers en `controllers/helpers/requestParams.ts`.
+  - Cerrados 3 hallazgos: `by-username`, scopes sin `write:users` y exposición de `passwordHash` / rutas públicas (ver [notas_express.md](notas/notas_express.md)).
+- Referencias: [notas_typescript.md](notas/notas_typescript.md), [notas_express.md](notas/notas_express.md)
 
 ### 2026-07-02
 - Estado: active

@@ -1,0 +1,22 @@
+#imageModal img {
+  width: 95%;
+  height: 95%;
+  /* text-align: center; */
+}
+
+#imageModal h5 {
+  color: black;
+}
+
+#imageModal {
+  display: flex;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-align: center;
+  /* flex-direction: column; */
+  /* justify-content: center; */
+}
+
+#imageModal .modal-content {
+  height: 100vh !important;
+}

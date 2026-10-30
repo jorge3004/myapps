@@ -1,0 +1,101 @@
+.main-Verification1 {
+  background-color: #212529;
+  position: fixed;
+  min-width: 100%;
+  min-height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.main-Verification1 .errorMessage {
+  color: brown;
+  margin-top: 10px;
+  width: 100;
+}
+.main-Verification1 input::placeholder {
+  text-align: center !important ;
+  opacity: 0.6;
+}
+.main-Verification1 .pswBtn {
+  padding: 8px 40px;
+  border-radius: 15px;
+  opacity: 0.8;
+  display: block;
+  margin: auto;
+  text-align: center !important;
+}
+.main-Verification1 .access {
+  padding: 7px 100px;
+  border-radius: 15px;
+}
+
+.main-Verification1 img {
+  width: 20vw;
+}
+.nsm7Bb-HzV7m-LgbsSe {
+  background-color: transparent !important;
+}
+
+@media only screen and (max-width: 425px) {
+  .main-Verification1 img {
+    width: 45vw;
+  }
+}
+@media only screen and (min-width: 425px) and (max-width: 700px) {
+  .main-Verification1 img {
+    width: 25vw;
+  }
+}
+@media only screen and (min-width: 700px) and (max-width: 1024px) {
+  .main-Verification1 img {
+    width: 20vw;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .main-Verification1 img {
+    width: 15vw;
+  }
+}
+/* .main-Verification1 {
+  background-image: url("../../assets/images/wallpape2.jpg");
+  position: fixed;
+  min-width: 100%;
+  min-height: 100%;
+  background-size: cover;
+  background-position: center;
+  display: block;
+} */
+/* html {
+  --text-color-normal: #0a244d;
+  --text-color-light: #8cabd9;
+}
+
+html[data-theme="dark"] {
+  --text-color-normal: hsl(210, 10%, 62%);
+  --text-color-light: hsl(210, 15%, 35%);
+  --text-color-richer: hsl(210, 50%, 72%);
+  --text-color-highlight: hsl(25, 70%, 45%);
+}
+body {
+  background-color: black;
+  color: white;
+}
+@media screen and (prefers-color-scheme: light) {
+  body {
+    background-color: white;
+    color: black;
+  }
+} */
+/* body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+} */

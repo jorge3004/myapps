@@ -1,0 +1,38 @@
+# services:
+  # php:
+  #   container_name: php-c
+  #   image: php-i
+    # depends_on:
+    #   - mysql
+  #   build:
+        # restart: always
+        # restart: unless-stopped
+  #     context: ./PHP
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - 3010:80
+  #   volumes:
+  #     - ./PHP/src:/var/www/html/
+  # octoprint:
+  #   container_name: octoprint-container
+  #   image: octoprint-image
+  #   build:
+  #     context: ./OCTOPRINT 
+  #   ports:
+  #     - 80:80
+  #   volumes:
+  #    - ./OCTOPRINT/OctoPrintOS/octoprint:/octoprint/octoprint
+  #    - ./OCTOPRINT/OctoPrint-Jir3d:/octoprint/octoprint/plugins/OctoPrint-Jir3d
+    # environment:
+    #   VIRTUAL_HOST: api.jir3d.com
+    #   LETSENCRYPT_HOST: api.jir3d.com
+    #   LETSENCRYPT_EMAIL: jorgeluis.rivera01@outlook.com
+
+
+##Production letscript
+# networks:
+#   default:
+#     name: proxy
+#     external: true
+# volumes:
+#   mysql_DB:

@@ -1,0 +1,82 @@
+services:
+  common:
+    stop_grace_period: "3s"
+    build:
+      args:
+        DOCKER_BUILDKIT: 1
+    environment:
+      DOCKER_BUILDKIT: 1
+
+  adminer:
+    extends: common
+    image: ${ADMINER_IMAGE_NAME}
+    container_name: ${ADMINER_CONTAINER_NAME}
+    build: ./ADMINER
+    ports:
+      - ${ADMINER_PUBLISHED_PORT}:${ADMINER_TARGET_PORT}
+
+  node:
+    extends: common
+    image: ${NODE_IMAGE_NAME}
+    container_name: ${NODE_CONTAINER_NAME}
+    build:
+      context: ./NODE
+      target: ${ENV}
+    volumes:
+      - ./NODE:/home/node/app
+    ports:
+      - ${NODE_PUBLISHED_PORT}:${NODE_TARGET_PORT}
+    env_file:
+      - .env
+
+  mysql:
+    extends: common
+    container_name: ${MYSQL_CONTAINER_NAME}
+    command: --default-authentication-plugin=mysql_native_password
+    volumes: 
+      -  ./MYSQL/mysql_DB:/var/lib/mysql
+      # - ./MYSQL/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    build:
+      context: ./MYSQL
+      args:
+        - MYSQL_USER=${MYSQL_USER}    
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}    
+        - MYSQL_DATABASE=${MYSQL_DATABASE}    
+    image: ${MYSQL_IMAGE_NAME}
+    ports:
+      - ${MYSQL_PUBLISHED_PORT}:${MYSQL_TARGET_PORT}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+  react-base:
+    extends: common
+    image: ${REACT_IMAGE_NAME}
+    container_name: ${REACT_CONTAINER_NAME}
+    build:
+      context: ./REACT
+      target: ${ENV}
+
+  webserver:
+    extends: common
+    image: nginx:latest
+    container_name: ${WEBSERVER_CONTAINER_NAME}
+    # image: ${WEBSERVER_IMAGE_NAME}
+    # build:
+    #   context: ./WEBSERVER
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./WEBSERVER/nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./WEBSERVER/certbot/www:/var/www/certbot/:ro
+      - ./WEBSERVER/certbot/conf/:/etc/nginx/ssl/:ro
+
+  certbot:
+    extends: common
+    image: certbot/certbot:latest
+    build:
+      context: ./WEBSERVER
+    volumes:
+      - ./WEBSERVER/certbot/www/:/var/www/certbot/:rw
+      - ./WEBSERVER/certbot/conf/:/etc/letsencrypt/:rw

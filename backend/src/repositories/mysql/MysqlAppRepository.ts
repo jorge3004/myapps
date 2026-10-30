@@ -20,9 +20,9 @@ export class MysqlAppRepository implements IAppRepository {
         return { ...app, apiKeys: await appModel.getApiKeysForApp(id) };
     }
 
-    async register({ name, description }: { name: string; description?: string }): Promise<AppWithApiKeys> {
+    async register({ name, description }: { name: string; description?: string | undefined }): Promise<AppWithApiKeys> {
         const id = randomUUID().replace(/-/g, '').slice(0, 16);
-        const app = await appModel.createApp({ id, name, description });
+        const app = await appModel.createApp({ id, name, ...(description !== undefined && { description }) });
         return { ...app, apiKeys: [] };
     }
 

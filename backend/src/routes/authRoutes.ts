@@ -62,9 +62,9 @@ router.post('/login', async (req, res) => {
             scopes: authzContext.effectiveScopes
         };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
-        res.json({ token });
+        return res.json({ token });
     } catch (err: any) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 });
 

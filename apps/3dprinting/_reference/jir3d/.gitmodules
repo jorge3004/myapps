@@ -1,0 +1,29 @@
+[submodule "REACT"]
+	path = REACT
+	url = git@github.com:jorge3004/JIR3D-REACT.git
+	branch = master
+	master = master
+[submodule "OCTOPRINT"]
+	path = OCTOPRINT
+	url = git@github.com:jorge3004/JIR3D-OCTOPRINT
+	branch = master
+[submodule "MYSQL"]
+	path = MYSQL
+	url = git@github.com:jorge3004/JIR3D-MYSQL
+	branch = master
+[submodule "NODE"]
+	path = NODE
+	url = git@github.com:jorge3004/JIR3D-NODE
+	branch = master
+[submodule "WEBSERVER"]
+	path = WEBSERVER
+	url = git@github.com:jorge3004/JIR3D-WEBSERVER
+	branch = master
+[submodule "ADMINER"]
+	path = ADMINER
+	url = git@github.com:jorge3004/JIR3D-ADMINER
+	branch = master
+[submodule "NEXT"]
+	path = NEXT
+	url = git@github.com:jorge3004/JIR3D-NEXT.git
+	branch = master

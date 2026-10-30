@@ -1,0 +1,20 @@
+<form class="form-horizontal">
+    <div class="control-group">
+        <label class="control-label">{{ _('NOMBRE') }}</label>
+        <div class="controls">
+            <input type="text" class="input-block-level" data-bind="value: settings.plugins.jir3d.nombre">
+        </div>
+        <label class="control-label">{{ _('APIKEY') }}</label>
+        <div class="controls">
+            <input type="text" class="input-block-level" data-bind="value: settings.plugins.jir3d.apikey">
+        </div>
+        <label class="control-label">{{ _('APIJIR3D') }}</label>
+        <div class="controls">
+            <select data-bind="value: settings.plugins.jir3d.jir3dAPI">
+                <option value="https://api.jir3d.com">api.jir3d.com</option>
+                <option value="https://dev.api.jir3d.com">dev.api.jir3d.COM</option>
+                <option value="http://nodejs:3001">http://nodejs:3001</option>
+            </select>
+        </div>
+    </div>
+</form>

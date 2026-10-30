@@ -1,0 +1,9 @@
+# node_modules
+# docker
+# .dockerignore
+# .git
+# .gitignore
+# .cpanel.yml
+# config
+# babel.config .json
+dist

@@ -1,0 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Koulen&display=swap");
+
+.hding div {
+  font-family: "Koulen", cursive;
+}
+
+.sidebar-nav-menu {
+  width: 80vw;
+  position: fixed;
+
+  bottom: 0;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.sidebarClose {
+  width: 20vw;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.modal-backdrop {
+  opacity: 0.8 !important;
+}
+
+.sidebar-nav-menu .nav-text {
+  padding: 15px 0px 8px 15%;
+  color: aliceblue;
+  font-size: 15px;
+}
+
+.modal.fade.modal-right .modal-dialog {
+  transform: translate(-125%, 0px);
+}
+
+.modal.show.modal-right .modal-dialog {
+  transform: none;
+}

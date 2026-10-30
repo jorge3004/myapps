@@ -268,7 +268,7 @@ Middleware `verifyUserToken` extrae y valida el token. Si es inválido/expirado 
 **Por username:** `GET /api/users/by-username/:username`  
 **Por ID:** `GET /api/users/:userId`
 
-Todos públicos (sin autenticación requerida).
+Requieren token de usuario. `by-email` y `by-username` exigen el scope `*:read:users`; `/:userId` (y `/:userId/apps`) permiten al propio usuario o a quien tenga `*:read:users`. Las respuestas nunca incluyen `passwordHash`.
 
 ### Asignar Usuario a App
 
@@ -310,7 +310,7 @@ Todos públicos (sin autenticación requerida).
 ### Obtener Apps del Usuario
 
 **Endpoint:** `GET /api/users/:userId/apps`  
-**Autenticación:** No requerida
+**Autenticación:** Token; el propio usuario o scope `*:read:users`
 
 **Response:**
 ```json

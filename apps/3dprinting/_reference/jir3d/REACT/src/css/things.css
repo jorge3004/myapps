@@ -1,0 +1,46 @@
+#things-img-grid {
+  height: 300px;
+  cursor: pointer;
+}
+#things-modal-title {
+  font-size: 15px;
+}
+@media (min-width: 320px) {
+  #things-img-grid {
+    height: 225px;
+  }
+  #things-titulo-img {
+    font-size: 12px !important;
+  }
+}
+@media (min-width: 375px) {
+  #things-img-grid {
+    height: 265px;
+  }
+}
+@media (min-width: 425px) {
+  #things-img-grid {
+    height: 335px;
+  }
+}
+@media (min-width: 768px) {
+  #things-img-grid {
+    height: 152px;
+  }
+  #things-titulo-img {
+    font-size: 12px !important;
+  }
+}
+@media (min-width: 1024px) {
+  #things-img-grid {
+    height: 250px;
+  }
+  #things-titulo-img {
+    font-size: 12px !important;
+  }
+}
+@media (min-width: 1440px) {
+  #things-img-grid {
+    height: 375px;
+  }
+}

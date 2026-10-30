@@ -703,3 +703,59 @@ Nota sobre cuenta maestra (break-glass):
 - Si un sistema te envia tu password actual por correo, probablemente no usa bcrypt correctamente (o guarda passwords de forma reversible, lo cual es riesgoso).
 - Flujo correcto moderno: recuperar acceso con token temporal y luego definir password nueva.
 - Regla de oro: nunca enviar password actual en texto plano al usuario.
+
+## Placeholders `?` en queries: de dónde sale cada valor
+
+Cada `?` se rellena en orden con el arreglo que se pasa a `pool.execute(sql, [..])` (evita SQL injection). Columnas de la tabla:
+
+- **Placeholder**: columna de la base de datos que ocupa el `?`.
+- **Valor en código**: variable/propiedad que se pasa en el arreglo.
+- **Origen en el request**: `req.params`, `req.body` o generado en el servidor.
+
+Archivos: [MysqlUserRepository.ts](../../backend/src/repositories/mysql/MysqlUserRepository.ts), [app.ts](../../backend/src/models/app.ts). Origen: controladores [userController.ts](../../backend/src/controllers/userController.ts), [userScopeController.ts](../../backend/src/controllers/userScopeController.ts), [userAppRoleController.ts](../../backend/src/controllers/userAppRoleController.ts), [appController.ts](../../backend/src/controllers/appController.ts).
+
+### Usuarios (`users`)
+
+| Operación | Placeholder (columna) | Valor en código | Origen en el request |
+|-----------|-----------------------|-----------------|----------------------|
+| `INSERT users` | `id` | `user.id` | `req.body.id` o generado (`getUserId`) |
+| | `username` | `user.username` | `req.body.username` / `name` / `email` |
+| | `email` | `user.email` | `req.body.email` (si falta, el username) |
+| | `password_hash` | `user.passwordHash` | `req.body.password` pasado por `bcrypt.hash` |
+| | `role` | `user.role` | `req.body.role` o primer rol de `appIds` |
+| | `scopes` / `revoked_scopes` | `JSON.stringify(user.scopes / revokedScopes)` | `req.body.scopes` / `revokedScopes` |
+| `UPDATE users SET scopes, revoked_scopes WHERE id` | `scopes` | `JSON.stringify(scopes)` | `req.body.scope` (agregado/quitado a la lista actual) |
+| | `revoked_scopes` | `JSON.stringify(revokedScopes)` | `req.body.scope` (ídem) |
+| | `id` (WHERE) | `id` | `req.params.userId` |
+| `SELECT ... WHERE ${column} = ?` | `id` / `email` / `username` | `value` | `req.params.userId` / `req.params.email` / body de login |
+| `SELECT ... LIMIT ? OFFSET ?` | — | `1000, 0` fijos | no viene del request (la paginación real se hace en memoria en `listUsers` con `req.query.limit/offset`) |
+
+### Usuario ↔ app (`user_apps`)
+
+| Operación | Placeholder (columna) | Valor en código | Origen en el request |
+|-----------|-----------------------|-----------------|----------------------|
+| `INSERT user_apps` (asignar rol) | `user_id` | `userId` | `req.params.userId` |
+| | `app_id` | `appId` | `req.body.appId` |
+| | `role` | `resolvedRole` | `req.body.role` (default `user`) |
+| `SELECT app_id, role WHERE user_id` | `user_id` | `userId` | `req.params.userId` |
+| `DELETE WHERE user_id AND app_id` | `user_id` | `userId` | `req.params.userId` |
+| | `app_id` | `appId` | `req.params.appId` |
+
+### Apps y API keys (`apps`, `api_keys`)
+
+| Operación | Placeholder (columna) | Valor en código | Origen en el request |
+|-----------|-----------------------|-----------------|----------------------|
+| `INSERT apps` | `id` | `id` | generado (`randomUUID`) |
+| | `name` | `name` | `req.body.name` |
+| | `description` | `description \|\| null` | `req.body.description` |
+| `SELECT apps WHERE id` | `id` | `id` | `req.params.appId` |
+| `SELECT api_keys WHERE app_id` | `app_id` | `appId` | `req.params.appId` |
+| `INSERT api_keys` | `id`, `api_key` | `apiKey.id`, `apiKey.apiKey` | generados (`randomUUID`) |
+| | `app_id` | `apiKey.appId` | `req.params.appId` |
+| | `scopes` | `JSON.stringify(apiKey.scopes)` | `req.body.scopes` (default `['*']`) |
+| `UPDATE api_keys SET revoked_by WHERE api_key` | `revoked_by` | `revokedBy \|\| null` | `req.user.userId` del token |
+| | `api_key` | `apiKey` | `req.params.apiKey` |
+
+### Nombres: DB vs código
+
+La conversión es en las funciones `mapUserRow` / `mapAppRow` / `mapApiKeyRow` (`password_hash` → `passwordHash`, `app_id` → `appId`, `revoked_scopes` → `revokedScopes`). No hay estandarizar nada más: la BD usa `snake_case` y el código `camelCase`; el mapeo vive en un solo lugar por tabla.

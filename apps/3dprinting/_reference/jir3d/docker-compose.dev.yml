@@ -1,0 +1,114 @@
+x-app:
+  # restart: always
+  # stop_grace_period: "3s"
+  &default-app
+  networks:
+    - jir3d
+  build: &build
+    target: dev
+
+services:
+
+  db:
+    <<: *default-app
+    container_name: db
+    image: db
+    # command: --default-authentication-plugin=mysql_native_password
+    # command: --mysql-native-password=ON
+    # command: --default-authentication-plugin=mysql_native_password
+    # volumes:
+      # - ./MYSQL/mysql_DB:/var/lib/mysql
+      # - ./MYSQL/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    build:
+      context: ./MYSQL
+      # args:
+      #   - MYSQL_USER=REDACTED_USER
+      #   - MYSQL_PASSWORD=REDACTED
+      #   - MYSQL_DATABASE=jirdcom_DB
+      #   - MYSQL_ROOT_PASSWORD=root
+        # - MYSQL_USER=${MYSQL_USER}
+        # - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        # - MYSQL_DATABASE=${MYSQL_DATABASE}
+        # - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - 3306:3306
+      # - ${MYSQL_PUBLISHED_PORT}:${MYSQL_TARGET_PORT}
+    # environment:
+    #   - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=REDACTED_USER
+      - MYSQL_PASSWORD=REDACTED
+      - MYSQL_DATABASE=jirdcom_DB
+
+  octoprint:
+    <<: *default-app
+    container_name: octoprint
+    image: octoprint
+    build:
+      context: ./OCTOPRINT
+    ports:
+      - ${OCTOPRINT_PUBLISHED_PORT}:${OCTOPRINT_TARGET_PORT}
+    volumes:
+      - ./OCTOPRINT/OctoPrintOS:/octoprint/octoprint
+      - ./OCTOPRINT/OctoPrint-Jir3d:/octoprint/octoprint/plugins/OctoPrint-Jir3d
+    environment:
+      - GATEWAY_IP=${GATEWAY_IP}
+      - NODE_PUBLISHED_PORT=${NODE_PUBLISHED_PORT}
+
+  adminer:
+    <<: *default-app
+    container_name: "adminer"
+    image: adminer
+    build: ./ADMINER
+    ports:
+      - ${ADMINER_PUBLISHED_PORT}:${ADMINER_TARGET_PORT}
+
+  nodejs:
+    <<: *default-app
+    container_name: nodejs
+    image: nodejs
+    # tty: true
+    build:
+      context: ./NODE
+      target: dev
+    ports:
+      - ${NODE_PUBLISHED_PORT}:${NODE_TARGET_PORT}
+    environment:
+      # Solo ejemplo porque se asignan en el .env
+      - NODE_TARGET_PORT=${NODE_TARGET_PORT}
+    env_file:
+      - .env
+    volumes:
+      - ./NODE:/app
+      - nodejs:/app/node_modules
+
+  reactjs:
+    <<: *default-app
+    volumes:
+      - ./REACT:/app
+      - reactjs:/app/node_modules
+    ports:
+      - ${REACT_PUBLISHED_PORT}:3000 #External:Internal Docker
+    container_name: reactjs
+    image: reactjs
+    build:
+      context: ./REACT
+      target: dev
+      args:
+        - VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+
+volumes:
+  nodejs:
+  reactjs:
+
+
+networks:
+  jir3d:
+    name: jir3d
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          ip_range: 172.28.5.0/24
+          gateway: ${GATEWAY_IP}

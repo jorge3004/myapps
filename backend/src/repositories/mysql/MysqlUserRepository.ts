@@ -1,7 +1,31 @@
 import pool from '../../db';
-import * as userModel from '../../models/user';
 import { User } from '../../models/user';
 import { AppRole, IUserRepository, RegisteredUser } from '../userRepository';
+
+function parseJsonArray(value: unknown): string[] {
+    if (Array.isArray(value)) return value as string[];
+    if (typeof value === 'string') {
+        try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    }
+    return [];
+}
+
+function mapUserRow(row: any): User {
+    return {
+        id: row.id,
+        username: row.username,
+        email: row.email,
+        passwordHash: row.passwordHash || row.password_hash,
+        role: row.role,
+        scopes: parseJsonArray(row.scopes),
+        revokedScopes: parseJsonArray(row.revokedScopes || row.revoked_scopes)
+    };
+}
 
 export class MysqlUserRepository implements IUserRepository {
     async register(user: User, appRoles: AppRole[] = []): Promise<RegisteredUser> {
@@ -49,23 +73,32 @@ export class MysqlUserRepository implements IUserRepository {
     }
 
     getUserById(id: string): Promise<User | null> {
-        return userModel.getUserById(id);
+        return this.fetchOneBy('id', id);
     }
 
     getUserByEmail(email: string): Promise<User | null> {
-        return userModel.getUserByEmail(email);
+        return this.fetchOneBy('email', email);
     }
 
     getUserByUsername(username: string): Promise<User | null> {
-        return userModel.getUserByUsername(username);
+        return this.fetchOneBy('username', username);
     }
 
-    listAllUsers(): Promise<User[]> {
-        return userModel.listUsers({ limit: 1000, offset: 0 });
+    async listAllUsers(): Promise<User[]> {
+        const [rows]: any = await pool.execute('SELECT * FROM users LIMIT ? OFFSET ?', [1000, 0]);
+        return (rows || []).map(mapUserRow);
     }
 
     async updateUserScopes(id: string, scopes: string[], revokedScopes: string[]): Promise<void> {
-        await userModel.updateUserScopes(id, scopes, revokedScopes);
+        await pool.execute(
+            'UPDATE users SET scopes = ?, revoked_scopes = ? WHERE id = ?',
+            [JSON.stringify(scopes || []), JSON.stringify(revokedScopes || []), id]
+        );
+    }
+
+    private async fetchOneBy(column: 'id' | 'email' | 'username', value: string): Promise<User | null> {
+        const [rows]: any = await pool.execute(`SELECT * FROM users WHERE ${column} = ?`, [value]);
+        return rows[0] ? mapUserRow(rows[0]) : null;
     }
 
     async getUserAppRoles(userId: string): Promise<AppRole[]> {

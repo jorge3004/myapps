@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Koulen&display=swap");
+
+.configuraciones {
+  font-family: "Koulen", cursive;
+  font-size: 20px;
+}
+
+.navbarContainer {
+  margin-bottom: 110px;
+}
+
+#navBarDashboard .navbar-toggler {
+  font-size: 10px !important;
+  padding: 2px 4px !important;
+}
+
+#navBarDashboard .search {
+  font-size: 15px;
+}
+
+#navBarDashboard svg {
+  font-size: 20px;
+}
+
+#navBarDashboard #usuarioLabel {
+  font-size: 15px;
+}
+
+#navBarDashboard #jir3dLogo {
+  width: 95px;
+}
+
+#navBarDashboard .banderas {
+  width: 60%;
+}
+
+#navBarDashboard .dropdown-menu {
+  top: 30px;
+  left: -15px;
+  font-size: 12px;
+  min-width: 50px !important;
+}
+
+#navBarDashboard .midrop {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  bottom: 0;
+  width: 80%;
+  z-index: 1000;
+  transition: 800ms;
+}
+
+#navBarDashboard .midrop.active {
+  right: 0;
+  transition: 800ms;
+}
+
+#navBarDashboard .mibackdrop {
+  position: fixed;
+  top: 0;
+  left: 100%;
+  bottom: 0;
+  width: 20%;
+  z-index: 1000;
+  opacity: 0.85;
+  transition: 800ms;
+}
+
+#navBarDashboard .mibackdrop.active {
+  left: 0;
+  transition: 800ms;
+}
+
+@media screen and (min-width: 320px) and (max-width: 375px) {
+  #navBarDashboard #jir3dLogo {
+    width: 80px;
+  }
+
+  #navBarDashboard #usuarioLabel {
+    font-size: 12px;
+  }
+}
+
+@media screen and (min-width: 376px) {
+  #navBarDashboard svg {
+    font-size: 25px;
+  }
+
+  #navBarDashboard .banderas {
+    width: 50%;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .navbarContainer {
+    margin-bottom: 75px;
+  }
+
+  #navBarDashboard svg {
+    font-size: 25px;
+  }
+
+  #navBarDashboard .banderas {
+    width: 30%;
+  }
+}

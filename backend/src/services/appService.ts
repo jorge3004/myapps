@@ -10,7 +10,7 @@ export async function getApplicationById(id: string): Promise<(App & { apiKeys: 
     return getAppRepository().getApplicationById(id);
 }
 
-export async function register({ name, description }: { name: string; description?: string }): Promise<App & { apiKeys: ApiKey[] }> {
+export async function register({ name, description }: { name: string; description?: string | undefined }): Promise<App & { apiKeys: ApiKey[] }> {
     return getAppRepository().register({ name, description });
 }
 

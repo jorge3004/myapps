@@ -31,8 +31,8 @@ export const issueAppToken = async (req: Request, res: Response) => {
             scopes: keyObj.scopes || []
         };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
-        res.json({ token });
+        return res.json({ token });
     } catch (err: any) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 };

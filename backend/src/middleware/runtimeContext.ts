@@ -38,7 +38,7 @@ export async function runtimeContextMiddleware(req: Request, res: Response, next
                 });
             }
 
-            next();
+            return next();
         });
     } catch (error) {
         next(error);

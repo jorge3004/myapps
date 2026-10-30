@@ -1,0 +1,4 @@
+[submodule "OctoPrint-Jir3d"]
+	path = OctoPrint-Jir3d
+	url = git@github.com:jorge3004/JIR3D-OCTOPRINT-SCRIPT.git
+	branch = master

@@ -1,0 +1,47 @@
+🛠 FIX : Bug Solved
+
+📎 Task : https://link-to-ticket
+
+❓ Why : 
+
+* Reason 1 why bug was reported.
+* Reason 2 why bug was reported.
+...
+* Reason n why bug was reported.
+
+💡 How :
+
+* Step 1 to solve the bug.
+* Step 2 to solve the bug.
+...
+* Step 3 to solve the bug. 
+
+‼️ Sides effects:
+
+Stuff that other developers must know about your changes to prevent blockers.
+
+* Consideration 1.
+* Consideration 2.
+...
+* Consideration n.
+
+✅ Files added:
+
+* path_to_file_1
+* path_to_file_2
+...
+* path_to_file_n
+
+⚠️ Files changed:
+
+* path_to_file_1
+* path_to_file_2
+...
+* path_to_file_n
+
+❌ Files removed:
+
+* path_to_file_1
+* path_to_file_2
+...
+* path_to_file_n

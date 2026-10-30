@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home4/jirdcom/public_html
+    - /bin/cp -R dist/* $DEPLOYPATH

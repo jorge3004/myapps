@@ -10,7 +10,7 @@ const apps = new Map<string, AppWithApiKeys>(
             id: app.id,
             name: app.name,
             description: app.description || '',
-            createdAt: app.createdAt,
+            ...(app.createdAt !== undefined && { createdAt: app.createdAt }),
             apiKeys: (app.apiKeys || []).map((key) => ({
                 ...key,
                 scopes: [...(key.scopes || [])]
@@ -43,7 +43,7 @@ export class MemoryAppRepository implements IAppRepository {
         return app ? cloneApp(app) : null;
     }
 
-    async register({ name, description }: { name: string; description?: string }): Promise<AppWithApiKeys> {
+    async register({ name, description }: { name: string; description?: string | undefined }): Promise<AppWithApiKeys> {
         const id = randomUUID().replace(/-/g, '').slice(0, 16);
         const app: AppWithApiKeys = {
             id,

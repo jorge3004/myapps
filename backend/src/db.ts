@@ -5,11 +5,19 @@ import path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
+function requireEnv(name: string): string {
+    const value = process.env[name];
+    if (value === undefined) {
+        throw new Error(`Missing required environment variable: ${name}`);
+    }
+    return value;
+}
+
 const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: requireEnv('DB_HOST'),
+    user: requireEnv('DB_USER'),
+    password: requireEnv('DB_PASSWORD'),
+    database: requireEnv('DB_NAME'),
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,

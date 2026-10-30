@@ -53,10 +53,10 @@
 |--------|----------|---------------|-------------|
 | GET | `/users` | Bearer (read:users) | Lista usuarios con paginación (?limit=20&offset=0) |
 | POST | `/users` | Bearer (write:users) | Crear usuario nuevo |
-| GET | `/users/by-email/:email` | No | Buscar usuario por email |
-| GET | `/users/by-username/:username` | No | Buscar usuario por username |
-| GET | `/users/:userId` | No | Obtener usuario por ID |
-| GET | `/users/:userId/apps` | No | Listar apps a las que tiene acceso |
+| GET | `/users/by-email/:email` | Token + `read:users` | Buscar usuario por email |
+| GET | `/users/by-username/:username` | Token + `read:users` | Buscar usuario por username |
+| GET | `/users/:userId` | Token (propio o `read:users`) | Obtener usuario por ID |
+| GET | `/users/:userId/apps` | Token (propio o `read:users`) | Listar apps a las que tiene acceso |
 | POST | `/users/:userId/apps` | Bearer (write:users) | Asignar usuario a app con rol |
 | DELETE | `/users/:userId/apps/:appId` | Bearer (write:users) | Remover usuario de app |
 
@@ -66,11 +66,11 @@
 
 | Método | Endpoint | Autenticación | Descripción |
 |--------|----------|---------------|-------------|
-| GET | `/users/:userId/scopes` | Bearer | Consultar scopes derivados, directos, revocados y efectivos |
-| POST | `/users/:userId/scopes` | Bearer | Agregar scope directo a usuario (formato: `appId:action:resource`) |
-| DELETE | `/users/:userId/scopes` | Bearer | Remover scope directo de usuario |
-| POST | `/users/:userId/revoked-scopes` | Bearer | Revocar scope específico (explicit deny) |
-| DELETE | `/users/:userId/revoked-scopes` | Bearer | Restaurar scope previamente revocado |
+| GET | `/users/:userId/scopes` | Token (propio o admin) | | Consultar scopes derivados, directos, revocados y efectivos |
+| POST | `/users/:userId/scopes` | Token + `write:users` | Agregar scope directo a usuario (formato: `appId:action:resource`) |
+| DELETE | `/users/:userId/scopes` | Token + `write:users` | Remover scope directo de usuario |
+| POST | `/users/:userId/revoked-scopes` | Token + `write:users` | Revocar scope específico (explicit deny) |
+| DELETE | `/users/:userId/revoked-scopes` | Token + `write:users` | Restaurar scope previamente revocado |
 
 ---
 

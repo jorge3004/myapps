@@ -6,33 +6,35 @@ import * as applicationService from '../services/appService';
 export const revokeApiKeyGlobal = async (req: Request, res: Response) => {
     try {
         const { apiKey } = req.params;
+        if (!apiKey) return res.status(400).json({ error: 'apiKey required' });
         const apps = await applicationService.listApplications();
         let found = false;
         let updatedApp = null;
         for (const app of apps) {
             const match = app.apiKeys.find(k => k.apiKey === apiKey);
             if (match) {
-                const revokedBy = (req as any).user?.userId || undefined;
+                const revokedBy = req.user?.userId || undefined;
                 updatedApp = await applicationService.revokeApiKey(app.id, apiKey, revokedBy);
                 found = true;
                 break;
             }
         }
         if (!found) throw new Error('API key not found');
-        res.json({ success: true, app: updatedApp });
+        return res.json({ success: true, app: updatedApp });
     } catch (err: any) {
-        res.status(400).json({ error: err instanceof Error ? err.message : String(err) });
+        return res.status(400).json({ error: err instanceof Error ? err.message : String(err) });
     }
 };
 
 export const revokeApiKey = async (req: Request, res: Response) => {
     try {
         const { appId, apiKey } = req.params;
-        const revokedBy = (req as any).user?.userId || undefined;
+        if (!appId || !apiKey) return res.status(400).json({ error: 'appId and apiKey required' });
+        const revokedBy = req.user?.userId || undefined;
         const app = await applicationService.revokeApiKey(appId, apiKey, revokedBy);
-        res.json({ success: true, app });
+        return res.json({ success: true, app });
     } catch (err: any) {
-        res.status(400).json({ error: err instanceof Error ? err.message : String(err) });
+        return res.status(400).json({ error: err instanceof Error ? err.message : String(err) });
     }
 };
 
@@ -40,9 +42,9 @@ export const registerApp = async (req: Request, res: Response) => {
     try {
         const { name, description } = req.body;
         const app = await applicationService.register({ name, description });
-        res.status(201).json(app);
+        return res.status(201).json(app);
     } catch (err: any) {
-        res.status(400).json({ error: err.message });
+        return res.status(400).json({ error: err.message });
     }
 };
 
@@ -50,11 +52,12 @@ export const registerApp = async (req: Request, res: Response) => {
 export const addApiKey = async (req: Request, res: Response) => {
     try {
         const { appId } = req.params;
+        if (!appId) return res.status(400).json({ error: 'appId required' });
         const { scopes } = req.body;
         const apiKey = await applicationService.addApiKey(appId, scopes || ['*']);
-        res.status(201).json(apiKey);
+        return res.status(201).json(apiKey);
     } catch (err: any) {
-        res.status(400).json({ error: err.message });
+        return res.status(400).json({ error: err.message });
     }
 };
 

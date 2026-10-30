@@ -1,0 +1,41 @@
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: wordpress_1
+    # image: jorge3004/wordpress_wordpress
+    restart: always
+   # ports:
+    #     - 8000:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: REDACTED
+      WORDPRESS_DB_NAME: exampledb
+      VIRTUAL_HOST: riveraholliday.us
+      LETSENCRYPT_HOST: riveraholliday.us
+    volumes:
+           - wordpress:/var/www/html
+  db:
+    image: mysql:5.7
+    # image: jorge3004/wordpress_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: REDACTED
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      VIRTUAL_HOST: riveraholliday.us
+      LETSENCRYPT_HOST: riveraholliday.us
+    volumes:
+      - db:/var/lib/mysql
+
+networks:
+  default:
+    external: true
+    name: proxy
+
+volumes:
+  wordpress:
+  db:

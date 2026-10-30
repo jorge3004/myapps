@@ -7,7 +7,7 @@ import { hasRequiredScope } from '../services/authorizationService';
  */
 export function requireScope({ appId, action, resource }: { appId: string | '*', action: string | '*', resource: string | '*' }) {
     return (req: Request, res: Response, next: NextFunction) => {
-        const scopes: string[] = (req as any).apiKey?.scopes || [];
+        const scopes: string[] = req.apiKey?.scopes || [];
         if (hasRequiredScope(scopes, { appId, action, resource })) {
             return next();
         }

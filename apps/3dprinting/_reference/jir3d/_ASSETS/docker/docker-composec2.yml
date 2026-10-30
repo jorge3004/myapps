@@ -1,0 +1,65 @@
+services:
+  node:
+    extends:
+      file: common-services.yml
+      service: node
+    profiles:
+      - "node"
+    volumes:
+      - node-prod:/home/node/app/node_modules
+
+  db:
+    extends: 
+      file: common-services.yml
+      service: mysql
+    profiles:
+      - "mysql"
+
+  adminer:
+    extends:
+      file: common-services.yml
+      service: adminer
+    profiles:
+      - "adminer"
+
+  react-dev:
+    extends: 
+      file: common-services.yml
+      service: react-base
+    volumes:
+      - ./REACT:/home/node/app
+      - react-prod:/home/node/app/node_modules
+    ports:
+      - ${REACT_PUBLISHED_PORT_dev}:${REACT_TARGET_PORT_dev}
+    profiles: 
+      - "react-dev"
+
+  react-prod:
+    extends:
+      file: common-services.yml
+      service: react-base
+    ports:
+      - ${REACT_PUBLISHED_PORT_prod}:${REACT_TARGET_PORT_prod}
+    profiles:
+      - "react-prod"
+
+  web-server:
+    extends:
+      file: common-services.yml
+      service: webserver
+    profiles:
+      - "web-server"
+
+  certbot:
+    extends:
+      file: common-services.yml
+      service: certbot
+    profiles:
+      - "certbot"
+  
+volumes:
+  node-prod:
+  react-prod:
+
+
+

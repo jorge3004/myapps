@@ -2,8 +2,8 @@ export type DataSource = 'mysql' | 'memory';
 export type RuntimeOperation = 'read' | 'write';
 
 export interface RuntimeResolutionInput {
-    requestedEnvironment?: string;
-    requestedDataSource?: string;
+    requestedEnvironment?: string | undefined;
+    requestedDataSource?: string | undefined;
     method: string;
     path?: string;
 }
@@ -17,5 +17,5 @@ export interface RuntimeResolvedContext {
     fallbackApplied: boolean;
     mysqlAvailable: boolean | null;
     allowWrite: boolean;
-    reason?: string;
+    reason?: string | undefined;
 }

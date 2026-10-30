@@ -1,0 +1,178 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200&display=swap");
+
+* {
+  font-family: "Manrope", sans-serif;
+}
+
+.headTitleJir3d {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  margin-bottom: 10px;
+  height: 50px;
+}
+
+.headTitleJir3d h1 {
+  font-weight: bold;
+  padding: 0 15px;
+}
+
+.icon-tag {
+  position: absolute;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background-color: antiquewhite;
+  opacity: 0.6;
+  border-radius: 3px;
+  color: black;
+  /* z-index: 1; */
+  /* width: 12px !important;
+  height: 12px !important; */
+}
+
+.block-icon:hover .icon-tag {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+
+svg {
+  cursor: pointer;
+}
+
+.tableJir3d {
+  text-align: center;
+  border-radius: 15px;
+  overflow: hidden;
+  font-size: 15px;
+}
+
+#cart #price {
+  font-size: 15px;
+}
+
+#cart #dimensions {
+  font-size: 10px;
+}
+
+.dropdown {
+  all: unset !important;
+}
+
+.dropdown-menu.show {
+  overflow: visible !important;
+}
+
+.tableJir3d tr {
+  vertical-align: middle !important;
+}
+
+.tableJir3d img {
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.tableJir3d .dropdown-menu {
+  min-width: 0px !important;
+}
+
+@media screen and (min-width: 320px) and (max-width: 374px) {
+  .headTitleJir3d h1 {
+    font-size: 16px !important;
+  }
+
+  .tableJir3d,
+  .dropdown button {
+    font-size: 8px !important;
+  }
+
+  .tableJir3d img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media screen and (min-width: 375px) and (max-width: 424px) {
+  .tableJir3d img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .tableJir3d,
+  .dropdown button {
+    font-size: 10px !important;
+  }
+
+  .headTitleJir3d h1 {
+    font-size: 18px !important;
+  }
+}
+
+@media only screen and (min-width: 425px) and (max-width: 767px) {
+  .tableJir3d img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .headTitleJir3d h1 {
+    font-size: 20px !important;
+  }
+
+  .tableJir3d,
+  .dropdown button {
+    font-size: 12px !important;
+  }
+
+  .tableJir3d img {
+    width: 50px;
+  }
+
+  #cart #price {
+    font-size: 18px;
+  }
+
+  #cart #dimensions {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .tableJir3d img {
+    width: 65px;
+    height: 65px;
+  }
+
+  .tableJir3d,
+  .dropdown button {
+    font-size: 14px !important;
+  }
+
+  .headTitleJir3d h1 {
+    font-size: 23px !important;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .tableJir3d img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .tableJir3d,
+  .dropdown button {
+    font-size: 18px !important;
+  }
+
+  .headTitleJir3d h1 {
+    font-size: 28px !important;
+  }
+}
+
+#devButton {
+  position: absolute;
+  right: 30px;
+  top: 65px;
+}
